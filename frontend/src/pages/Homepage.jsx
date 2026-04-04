@@ -1,13 +1,14 @@
+import React from 'react'
 import Header from '../components/Header'
 import Herosection from '../components/Herosection'
+import Features from '../components/Features'
 
 const Homepage = () => {
   return (
-    <div className='bg-black text-white min-h-screen flex flex-col  gap-5'>
-        <Header/>
-        <div className='border shadow-md  px-10 py-2 flex items-center justify-center'>
-            <Herosection/>
-        </div>
+    <div className='min-h-screen bg-black text-white'>
+      <Header/>
+      <Herosection/>
+      <Features/>
       
     </div>
   )

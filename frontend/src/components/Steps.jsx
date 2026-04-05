@@ -31,7 +31,7 @@ const Steps = () => {
 
 const Card = ({title, isActive})=>{
     return(
-    <div className={`group rounded-2xl border text-center bg-black p-6 text-white transition duration-400 hover:-translate-y-1 hover:shadow-[0_0_0_1px_white] md:p-8 ${isActive ? 'border-white shadow-[0_0_24px_rgba(255,255,255,0.35)] scale-[1.02]' : 'border-white/35'}`}>
+    <div className={`group rounded-2xl border text-center bg-black p-6 text-white transition duration-400 hover:-translate-y-1 cursor-auto md:p-8 ${isActive ? 'border-white shadow-[0_0_24px_rgba(255,255,255,0.35)] scale-[1.02]' : 'border-white/35'}`}>
             <h1 className='text-xl font-semibold tracking-wide md:text-2xl'>{title}</h1>
 
         </div>

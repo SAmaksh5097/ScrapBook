@@ -1,11 +1,11 @@
 import { MoveRight } from 'lucide-react'
 
-const DashboardCard = ({ title = 'Summer 2024 Trip', date = 'Date', imageUrl = '', cardIndex = 0 }) => {
+const DashboardCard = ({ title = 'Summer 2024 Trip',  imageUrl = '', cardIndex = 0 }) => {
   const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
   const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
 
   return (
-    <article className={`group relative mx-auto flex h-full w-full max-w-sm cursor-pointer flex-col gap-3 border border-zinc-300 bg-[#fffdf7] p-3 text-black shadow-[0_8px_20px_rgba(0,0,0,0.3)] transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0 hover:shadow-[0_14px_26px_rgba(0,0,0,0.4)] ${tiltClass}`}>
+    <article className={`group relative mx-auto flex h-full w-full max-w-sm cursor-pointer flex-col gap-3 border border-zinc-300 bg-[linear-gradient(to_top_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))]  p-3 text-black shadow-[0_8px_20px_rgba(0,0,0,0.3)] transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0 hover:shadow-[0_14px_26px_rgba(0,0,0,0.4)] ${tiltClass}`}>
         <div className='absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full border border-zinc-200 bg-rose-500 shadow-[0_1px_4px_rgba(0,0,0,0.4)]'>
         </div>
 
@@ -17,13 +17,12 @@ const DashboardCard = ({ title = 'Summer 2024 Trip', date = 'Date', imageUrl = '
                 className='h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03]'
               />
             ) : (
-              <div className='h-40 w-full bg-linear-to-br from-amber-100 via-orange-200 to-yellow-300'></div>
+              <div className='h-40 w-full bg-gray-200'></div>
             )}
         </div>
 
         <div className='space-y-1 px-1 pt-1'>
             <h1 className='text-base font-semibold leading-tight'>{title}</h1>
-            <h2 className='text-sm text-zinc-600'>{date}</h2>
         </div>
 
         <div className='mt-auto flex justify-end px-1 text-zinc-700 transition duration-300 group-hover:translate-x-1 group-hover:text-black'>

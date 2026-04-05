@@ -2,17 +2,21 @@ import Footer from './components/Footer'
 import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
 import Homepage from './pages/Homepage'
-import {Router, Routes, Route} from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
+import Yearpage from './pages/Yearpage'
+import Memorypage from './pages/Memorypage'
 const App = () => {
   return (
-    <>
-    <Header/>
-    <Routes>
-      <Route path='/' element={<Homepage/>}/>
-      <Route path='/dashboard' element={<Dashboard/>}/>
-    </Routes>    
-    <Footer/>
-    </>
+    <div className='min-h-screen h-fit w-full bg-black text-white relative'>
+      <Header/>
+      <Routes>
+        <Route path='/' element={<Homepage/>}/>
+        <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path='/dashboard/2024' element={<Yearpage/>}/>
+        <Route path='/dashboard/2024/memoryid' element={<Memorypage/>}/>
+      </Routes>    
+      <Footer/>
+    </div>
   )
 }
 

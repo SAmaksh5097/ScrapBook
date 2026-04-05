@@ -15,7 +15,7 @@ const Dashboard = () => {
           <h1 className='text-2xl font-semibold tracking-wide md:text-4xl'>My Scrapbook Memories</h1>
           <button className='flex gap-2 border p-2 rounded bg-white text-black cursor-pointer hover:bg-gray-300 items-center transition '>
             <Plus/>
-            New memory</button>
+            New Year</button>
         </div>
 
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>

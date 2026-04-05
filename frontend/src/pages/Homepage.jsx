@@ -7,7 +7,6 @@ import Steps from '../components/Steps'
 const Homepage = () => {
   return (
     <div className='min-h-screen bg-black text-white'>
-      <Header/>
       <Herosection/>
       <Steps/>
       

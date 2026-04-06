@@ -31,22 +31,22 @@ const TemplateClassic = ({ entry }) => {
   }
 
   return (
-    <article className='w-full max-w-5xl overflow-hidden rounded-3xl border border-stone-200 bg-stone-100/95 p-6 shadow-sm'>
+    <article className='w-full max-w-5xl overflow-hidden rounded-3xl border border-zinc-300 bg-[linear-gradient(to_top_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))] p-6 shadow-[0_8px_20px_rgba(0,0,0,0.18)]'>
       <div className='grid gap-6 md:grid-cols-[1fr_360px] md:items-center'>
         <div className='space-y-3 text-left'>
-          <span className='inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-rose-700'>
+          <span className='inline-flex rounded-full border border-zinc-300 bg-white/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-zinc-700'>
             {entry.month}
           </span>
-          <h3 className='max-w-xl text-5xl font-bold leading-[1.05] text-slate-700'>{entry.title}</h3>
-          <p className='max-w-lg text-2xl leading-relaxed text-slate-600'>{entry.desc}</p>
-          <p className='text-sm text-slate-600'>{current.desc || 'No description provided.'}</p>
-          {entry.location && <p className='text-sm text-slate-600'>Location: {entry.location}</p>}
+          <h3 className='max-w-xl text-5xl font-bold leading-[1.05] text-zinc-800'>{entry.title}</h3>
+          <p className='max-w-lg text-2xl leading-relaxed text-zinc-700'>{entry.desc}</p>
+          <p className='text-sm text-zinc-700'>{current.desc || 'No description provided.'}</p>
+          {entry.location && <p className='text-sm text-zinc-700'>Location: {entry.location}</p>}
 
           <div className='flex items-center gap-3 pt-2'>
             <button
               type='button'
               onClick={showPrevious}
-              className='rounded-full bg-slate-700 px-3 py-1 text-sm font-semibold text-white transition hover:bg-slate-600'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 transition hover:bg-white'
               aria-label='Previous image'
             >
               ←
@@ -54,7 +54,7 @@ const TemplateClassic = ({ entry }) => {
             <button
               type='button'
               onClick={showNext}
-              className='rounded-full bg-slate-700 px-3 py-1 text-sm font-semibold text-white transition hover:bg-slate-600'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 transition hover:bg-white'
               aria-label='Next image'
             >
               →
@@ -63,11 +63,11 @@ const TemplateClassic = ({ entry }) => {
         </div>
 
         <div className='relative mx-auto h-75 w-full max-w-85'>
-          <div className='absolute left-2 top-0 w-[58%] -rotate-2 rounded-sm bg-white p-3 shadow-lg'>
+          <div className='absolute left-2 top-0 w-[58%] -rotate-2 rounded-sm border border-zinc-300 bg-white p-3 shadow-lg'>
             <img src={current.imageFile} alt={current.title || entry.title} className='h-42.5 w-full object-cover' />
           </div>
 
-          <div className='absolute right-0 top-20 w-[58%] rotate-3 rounded-sm bg-white p-3 shadow-lg'>
+          <div className='absolute right-0 top-20 w-[58%] rotate-3 rounded-sm border border-zinc-300 bg-white p-3 shadow-lg'>
             <img src={next.imageFile} alt={next.title || entry.title} className='h-42.5 w-full object-cover' />
           </div>
         </div>

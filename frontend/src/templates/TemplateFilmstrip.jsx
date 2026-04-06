@@ -30,11 +30,11 @@ const TemplateFilmstrip = ({ entry }) => {
   }
 
   return (
-    <article className='w-full max-w-5xl rounded-3xl border border-zinc-300 bg-zinc-100 p-6 shadow-sm'>
-      <div className='rounded-2xl border border-zinc-800 bg-zinc-900 p-4'>
+    <article className='w-full max-w-5xl rounded-3xl border border-zinc-300 bg-[linear-gradient(to_top_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))] p-6 shadow-[0_8px_20px_rgba(0,0,0,0.18)]'>
+      <div className='rounded-2xl border border-zinc-300 bg-white/70 p-4'>
         <div className='mb-3 flex items-center justify-between'>
-          <h3 className='text-3xl font-bold text-zinc-100'>{entry.title}</h3>
-          <span className='rounded-full bg-zinc-700 px-3 py-1 text-xs font-semibold text-zinc-100'>{entry.month}</span>
+          <h3 className='text-3xl font-bold text-zinc-800'>{entry.title}</h3>
+          <span className='rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs font-semibold text-zinc-700'>{entry.month}</span>
         </div>
 
         <div className='grid gap-3 md:grid-cols-[120px_1fr]'>
@@ -44,7 +44,7 @@ const TemplateFilmstrip = ({ entry }) => {
                 type='button'
                 key={`${image.imageFile}-${index}`}
                 onClick={() => setActiveIndex(index)}
-                className={`overflow-hidden rounded-md border ${index === activeIndex ? 'border-amber-300' : 'border-zinc-700'}`}
+                className={`overflow-hidden rounded-md border ${index === activeIndex ? 'border-zinc-500' : 'border-zinc-300'}`}
                 aria-label={`Go to image ${index + 1}`}
               >
                 <img src={image.imageFile} alt={image.title || entry.title} className='h-16 w-full object-cover md:h-20' />
@@ -52,11 +52,11 @@ const TemplateFilmstrip = ({ entry }) => {
             ))}
           </div>
 
-          <div className='rounded-xl border border-zinc-700 bg-zinc-800 p-3'>
+          <div className='rounded-xl border border-zinc-300 bg-white p-3'>
             <img src={current.imageFile} alt={current.title || entry.title} className='h-72 w-full rounded-lg object-cover' />
-            <p className='pt-3 text-sm text-zinc-200'>{current.desc || 'No description provided.'}</p>
-            <p className='pt-2 text-sm text-zinc-300'>{entry.desc}</p>
-            {entry.location && <p className='pt-1 text-sm text-zinc-300'>Location: {entry.location}</p>}
+            <p className='pt-3 text-sm text-zinc-700'>{current.desc || 'No description provided.'}</p>
+            <p className='pt-2 text-sm text-zinc-700'>{entry.desc}</p>
+            {entry.location && <p className='pt-1 text-sm text-zinc-700'>Location: {entry.location}</p>}
           </div>
         </div>
 
@@ -65,7 +65,7 @@ const TemplateFilmstrip = ({ entry }) => {
             <button
               type='button'
               onClick={showPrevious}
-              className='rounded-full bg-zinc-700 px-3 py-1 text-sm font-semibold text-zinc-100 hover:bg-zinc-600'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 hover:bg-white'
               aria-label='Previous image'
             >
               ←
@@ -73,7 +73,7 @@ const TemplateFilmstrip = ({ entry }) => {
             <button
               type='button'
               onClick={showNext}
-              className='rounded-full bg-zinc-700 px-3 py-1 text-sm font-semibold text-zinc-100 hover:bg-zinc-600'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 hover:bg-white'
               aria-label='Next image'
             >
               →

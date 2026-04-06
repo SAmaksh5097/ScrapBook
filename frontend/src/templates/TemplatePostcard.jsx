@@ -30,17 +30,17 @@ const TemplatePostcard = ({ entry }) => {
   }
 
   return (
-    <article className='w-full max-w-5xl rounded-3xl border-2 border-amber-200 bg-amber-50 p-6 shadow-md'>
+    <article className='w-full max-w-5xl rounded-3xl border border-zinc-300 bg-[linear-gradient(to_top_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))] p-6 shadow-[0_8px_20px_rgba(0,0,0,0.18)]'>
       <div className='grid gap-6 md:grid-cols-2'>
-        <div className='space-y-4 rounded-2xl border border-dashed border-amber-300 bg-white p-4'>
+        <div className='space-y-4 rounded-2xl border border-dashed border-zinc-300 bg-white p-4'>
           <img src={current.imageFile} alt={current.title || entry.title} className='h-72 w-full rounded-xl object-cover' />
-          <p className='text-sm italic text-amber-900/80'>{current.desc || 'No description provided.'}</p>
+          <p className='text-sm italic text-zinc-700'>{current.desc || 'No description provided.'}</p>
 
           <div className='flex items-center gap-3'>
             <button
               type='button'
               onClick={showPrevious}
-              className='rounded-full bg-amber-700 px-3 py-1 text-sm font-semibold text-white hover:bg-amber-600'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 hover:bg-white'
               aria-label='Previous image'
             >
               ←
@@ -48,7 +48,7 @@ const TemplatePostcard = ({ entry }) => {
             <button
               type='button'
               onClick={showNext}
-              className='rounded-full bg-amber-700 px-3 py-1 text-sm font-semibold text-white hover:bg-amber-600'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 hover:bg-white'
               aria-label='Next image'
             >
               →
@@ -56,15 +56,15 @@ const TemplatePostcard = ({ entry }) => {
           </div>
         </div>
 
-        <div className='flex flex-col justify-between rounded-2xl border border-amber-200 bg-amber-100/70 p-5'>
+        <div className='flex flex-col justify-between rounded-2xl border border-zinc-300 bg-white/65 p-5'>
           <div className='space-y-2'>
-            <p className='text-xs font-semibold uppercase tracking-widest text-amber-700'>{entry.month}</p>
-            <h3 className='text-4xl font-bold text-amber-900'>{entry.title}</h3>
-            <p className='text-amber-900/80'>{entry.desc}</p>
+            <p className='text-xs font-semibold uppercase tracking-widest text-zinc-700'>{entry.month}</p>
+            <h3 className='text-4xl font-bold text-zinc-800'>{entry.title}</h3>
+            <p className='text-zinc-700'>{entry.desc}</p>
           </div>
 
           {entry.location && (
-            <div className='space-y-1 text-sm text-amber-800'>
+            <div className='space-y-1 text-sm text-zinc-700'>
               <p><span className='font-semibold'>Location:</span> {entry.location}</p>
             </div>
           )}

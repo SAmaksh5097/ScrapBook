@@ -32,21 +32,21 @@ const TemplateTimeline = ({ entry }) => {
   }
 
   return (
-    <article className='w-full max-w-5xl overflow-hidden rounded-3xl border border-teal-200/60 bg-linear-to-r from-teal-100/70 via-teal-50 to-teal-900/35 p-6 shadow-sm'>
+    <article className='w-full max-w-5xl overflow-hidden rounded-3xl border border-zinc-300 bg-[linear-gradient(to_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))] p-6 shadow-[0_8px_20px_rgba(0,0,0,0.18)]'>
       <div className='space-y-6'>
         <div className='space-y-1 text-center'>
-          <h3 className='text-5xl font-bold text-amber-700'>{entry.title}</h3>
-          <p className='text-xl font-semibold italic text-amber-900/70'>{entry.month}</p>
+          <h3 className='text-5xl font-bold text-zinc-800'>{entry.title}</h3>
+          <p className='text-xl font-semibold italic text-zinc-700'>{entry.month}</p>
         </div>
 
         <div className='grid gap-4 sm:grid-cols-3'>
           {[previous, current, next].map((image, index) => (
             <div
               key={`${image.imageFile}-${index}`}
-              className={`rounded-sm bg-white p-3 shadow-xl ${index === 1 ? 'sm:-translate-y-2' : 'sm:translate-y-2'}`}
+              className={`rounded-sm border border-zinc-300 bg-white p-3 shadow-xl ${index === 1 ? 'sm:-translate-y-2' : 'sm:translate-y-2'}`}
             >
               <img src={image.imageFile} alt={image.title || entry.title} className='h-48 w-full object-cover' />
-              <p className='pt-2 text-center text-sm italic text-slate-600'>
+              <p className='pt-2 text-center text-sm italic text-zinc-700'>
                 {image.desc || 'No description provided.'}
               </p>
             </div>
@@ -54,13 +54,13 @@ const TemplateTimeline = ({ entry }) => {
         </div>
 
         <div className='flex flex-wrap items-center justify-between gap-3'>
-          <p className='max-w-2xl text-lg text-teal-950'>{entry.desc}</p>
+          <p className='max-w-2xl text-lg text-zinc-800'>{entry.desc}</p>
 
           <div className='flex items-center gap-3'>
             <button
               type='button'
               onClick={showPrevious}
-              className='rounded-full bg-teal-900 px-3 py-1 text-sm font-semibold text-white transition hover:bg-teal-800'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 transition hover:bg-white'
               aria-label='Previous image'
             >
               ←
@@ -68,7 +68,7 @@ const TemplateTimeline = ({ entry }) => {
             <button
               type='button'
               onClick={showNext}
-              className='rounded-full bg-teal-900 px-3 py-1 text-sm font-semibold text-white transition hover:bg-teal-800'
+              className='rounded-full border border-zinc-300 bg-white/80 px-3 py-1 text-sm font-semibold text-zinc-800 transition hover:bg-white'
               aria-label='Next image'
             >
               →
@@ -77,7 +77,7 @@ const TemplateTimeline = ({ entry }) => {
         </div>
 
         {entry.location && (
-          <div className='grid gap-2 text-sm text-teal-900 sm:grid-cols-2'>
+          <div className='grid gap-2 text-sm text-zinc-700 sm:grid-cols-2'>
             <p><span className='font-semibold'>Location:</span> {entry.location}</p>
           </div>
         )}

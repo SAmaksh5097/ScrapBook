@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
-
+import { Link } from 'react-router-dom'
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [memories, setMemories] = useState([
@@ -48,9 +48,11 @@ const Yearpage = () => {
           >
             Add memory
           </button>
-          <button className='border bg-white text-black p-2 rounded-sm cursor-pointer hover:bg-gray-300'>
-            View Yearbook
-          </button>
+          <Link to={'/yearbook'}>
+            <button className='border bg-white text-black p-2 rounded-sm cursor-pointer hover:bg-gray-300'>
+              View Yearbook
+            </button>
+          </Link>
         </div>
       </div>
 

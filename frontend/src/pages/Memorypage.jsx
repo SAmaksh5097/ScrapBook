@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Camera } from 'lucide-react'
 import Momentcard from '../components/Momentcard'
-import AddMemoryForm from '../components/AddMomentForm'
+import AddMomentForm from '../components/AddMomentForm'
 
 const Memorypage = () => {
     const [moments, setMoments] = useState([
@@ -70,7 +70,7 @@ const Memorypage = () => {
 
         {showAddForm && (
           <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'>
-            <AddMemoryForm onSubmit={handleAddMemory} onCancel={() => setShowAddForm(false)} />
+            <AddMomentForm onSubmit={handleAddMemory} onCancel={() => setShowAddForm(false)} />
           </div>
         )}
 

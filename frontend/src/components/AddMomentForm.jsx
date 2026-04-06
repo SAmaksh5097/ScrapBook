@@ -109,7 +109,7 @@ const AddMomentForm = ({ onSubmit, onCancel }) => {
             type='submit'
             className='rounded-md bg-amber-300 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-200'
           >
-            Add Memory
+            Add Moment
           </button>
         </div>
       </form>

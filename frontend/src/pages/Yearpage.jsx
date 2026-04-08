@@ -1,58 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Link, useParams } from 'react-router-dom'
+
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [memories, setMemories] = useState([])
+  const { year } = useParams()
 
-  const [memories, setMemories] = useState([]);
+  const fetchMemories = useCallback(async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/memories/1234/${year}`)
 
-  const { year } = useParams();
+      if (!response.ok) {
+        throw new Error('Failed to fetch memories')
+      }
 
-  async function fetchMemories(){
-    const response = await fetch(`http://localhost:5000/api/memories/1234/${year}`,{
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-
-    if(response.ok){
       const data = await response.json()
-      console.log(`Memories for ${year}:`, data)
-      setMemories(data);
-    } else {
-      console.error('Failed to fetch memories')
+      setMemories(data)
+    } catch (error) {
+      console.error('Failed to fetch memories:', error)
     }
-  }
+  }, [year])
 
-  useEffect(()=>{
-    fetchMemories();
-  },[]);
+  useEffect(() => {
+    fetchMemories()
+  }, [fetchMemories])
 
-  const formatMonthYear = (value) => {
-    if (!value) return ''
-
-    const [year, month] = value.split('-')
-    if (!year || !month) return value
-
-    const date = new Date(Number(year), Number(month) - 1, 1)
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      year: 'numeric'
-    }).format(date)
-  }
-
-  const handleAddMemory = (newMemory) => {
-    setMemories((prevMemories) => [
-      {
-        id: Date.now(),
-        title: newMemory.title,
-        date: formatMonthYear(newMemory.month)
-      },
-      ...prevMemories
-    ])
-
+  const handleAddMemory = async () => {
+    await fetchMemories()
     setIsFormOpen(false)
   }
 

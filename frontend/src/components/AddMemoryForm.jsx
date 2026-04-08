@@ -2,31 +2,54 @@ import { useState } from 'react'
 
 const AddMemoryForm = ({ onSubmit, onCancel }) => {
   const [title, setTitle] = useState('')
-  const [month, setMonth] = useState('')
-  const [imageFile, setImageFile] = useState(null)
+  const [date, setDate] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [desc, setDesc] = useState('')
   const [location, setLocation] = useState('')
 
-  const handleSubmit = (event) => {
+  const user_id = 1234; // will change it later to dynamic value based on logged in user
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
-    if (!title.trim() || !month) {
+    if (!title.trim() || !date) {
       return
     }
+
+    try{
+      const response = await fetch(`http://localhost:5000/api/memories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user_id,
+          title: title.trim(),
+          date: date,
+          cover_img_url: imageUrl.trim(),
+          description: desc.trim(),
+          location: location.trim()
+        })
+      })
+    } catch (err){
+      console.error('Error adding memory:', err);
+    }
+
 
     if (onSubmit) {
       onSubmit({
         title: title.trim(),
-        month,
-        imageFile,
+        date: date,
+        imageFile: null,
+        imageUrl: imageUrl.trim(),
         desc: desc.trim(),
         location: location.trim()
       })
     }
 
     setTitle('')
-    setMonth('')
-    setImageFile(null)
+    setDate('')
+    setImageUrl('')
     setDesc('')
     setLocation('')
   }
@@ -54,31 +77,32 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
         </div>
 
         <div className='space-y-1'>
-          <label htmlFor='month' className='text-sm font-medium text-zinc-100'>
-            Month & Year <span className='text-rose-300'>*</span>
+          <label htmlFor='date' className='text-sm font-medium text-zinc-100'>
+            Date <span className='text-rose-300'>*</span>
           </label>
           <input
-            type='month'
-            id='month'
-            name='month'
-            value={month}
-            onChange={(event) => setMonth(event.target.value)}
+            type='date'
+            id='date'
+            name='date'
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
             required
             className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm outline-none transition focus:border-amber-400'
           />
         </div>
 
         <div className='space-y-1'>
-          <label htmlFor='imageFile' className='text-sm font-medium text-zinc-100'>
-            Cover Image
+          <label htmlFor='imageUrl' className='text-sm font-medium text-zinc-100'>
+            Cover Image URL
           </label>
           <input
-            type='file'
-            id='imageFile'
-            name='imageFile'
-            accept='image/*'
-            onChange={(event) => setImageFile(event.target.files?.[0] || null)}
-            className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-amber-300 file:px-3 file:py-1 file:text-sm file:font-medium file:text-black hover:file:bg-amber-200'
+            type='url'
+            id='imageUrl'
+            name='imageUrl'
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
+            className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm outline-none transition focus:border-amber-400'
+            placeholder='https://example.com/cover.jpg'
           />
         </div>
 

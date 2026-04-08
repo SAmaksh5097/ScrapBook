@@ -51,7 +51,7 @@ const Memorypage = () => {
     const [showAddForm, setShowAddForm] = useState(false)
 
   return (
-    <div className='relative bg-black text-white min-h-screen h-fit py-10 px-4 md:px-10'>
+    <div className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'>
         <div className='flex justify-between border-b border-white/30 pb-5 mb-5 items-center'>
             <div>
                 <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>

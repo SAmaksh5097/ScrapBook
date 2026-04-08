@@ -8,15 +8,17 @@ import Memorypage from './pages/Memorypage'
 import Yearbook from './pages/Yearbook'
 const App = () => {
   return (
-    <div className='min-h-screen h-fit w-full bg-black text-white relative'>
+    <div className='flex flex-col min-h-screen w-full bg-black text-white'>
       <Header/>
-      <Routes>
-        <Route path='/' element={<Homepage/>}/>
-        <Route path='/dashboard' element={<Dashboard/>}/>
-        <Route path='/dashboard/:year' element={<Yearpage/>}/>
-        <Route path='/dashboard/:year/:memoryId' element={<Memorypage/>}/>
-        <Route path='/yearbook' element={<Yearbook/>}/>
-      </Routes>    
+      <main className='flex-1'>
+        <Routes>
+          <Route path='/' element={<Homepage/>}/>
+          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/dashboard/:year' element={<Yearpage/>}/>
+          <Route path='/dashboard/:year/:memoryId' element={<Memorypage/>}/>
+          <Route path='/yearbook' element={<Yearbook/>}/>
+        </Routes>
+      </main>
       <Footer/>
     </div>
   )

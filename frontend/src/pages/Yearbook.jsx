@@ -118,7 +118,7 @@ const templatePreviewEntries = templateComponents.map((_, templateIndex) => {
 
 const Yearbook = () => {
   return (
-    <div className='relative min-h-screen overflow-hidden bg-black px-4 py-6 sm:px-6 sm:py-8'>
+    <div className='relative w-full overflow-hidden bg-black px-4 py-6 sm:px-6 sm:py-8 pb-20'>
       <div className='pointer-events-none absolute -left-24 top-14 h-56 w-56 rounded-full bg-sky-500/10 blur-3xl' />
       <div className='pointer-events-none absolute -right-16 top-28 h-64 w-64 rounded-full bg-amber-300/10 blur-3xl' />
       <div className='pointer-events-none absolute bottom-10 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-rose-300/10 blur-3xl' />

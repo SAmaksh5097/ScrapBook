@@ -62,7 +62,7 @@ const Yearpage = () => {
   }
 
   return (
-    <div className='min-h-screen h-fit flex flex-col gap-5  bg-black text-white py-10 px-4 md:px-10'>
+    <div className='w-full flex flex-col gap-5 bg-black text-white py-10 px-4 md:px-10 pb-20'>
       <div className='flex justify-between'>
         <h1 className='text-4xl'>{year} Archive</h1>
         <div className='flex gap-2'>

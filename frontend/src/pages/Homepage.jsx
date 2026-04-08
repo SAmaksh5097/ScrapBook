@@ -6,10 +6,9 @@ import Steps from '../components/Steps'
 
 const Homepage = () => {
   return (
-    <div className='min-h-screen bg-black text-white'>
+    <div className='w-full bg-black text-white pb-20'>
       <Herosection/>
       <Steps/>
-      
     </div>
   )
 }

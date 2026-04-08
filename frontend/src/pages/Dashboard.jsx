@@ -45,7 +45,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className='min-h-screen h-fit bg-black text-white py-10 px-4 md:px-10'>
+    <div className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'>
       <div className='mx-auto w-full max-w-7xl'>
         <div className='mb-8 flex  items-center justify-between'>
           <h1 className='text-2xl font-semibold tracking-wide md:text-4xl'>My Scrapbook Memories</h1>

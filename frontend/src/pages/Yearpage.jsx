@@ -1,15 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Link } from 'react-router-dom'
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const [memories, setMemories] = useState([
-    { id: 1, title: 'Road Trip', date: 'June 2024' },
-    { id: 2, title: 'Beach Vacation', date: 'July 2024' },
-    { id: 3, title: 'Mountain Hike', date: 'August 2024' },
-    { id: 4, title: 'City Exploration', date: 'September 2024' },
-  ])
+
+  const [memories, setMemories] = useState([]);
+
+  async function fetchMemories(){
+    const response = await fetch(`http://localhost:5000/api/memories/1234/2026`,{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+
+    if(response.ok){
+      const data = await response.json()
+      console.log('Memories for 2026:', data)
+      setMemories(data);
+    } else {
+      console.error('Failed to fetch memories')
+    }
+  }
+
+  useEffect(()=>{
+    fetchMemories();
+  },[]);
 
   const formatMonthYear = (value) => {
     if (!value) return ''
@@ -63,8 +80,8 @@ const Yearpage = () => {
       )}
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-        {memories.map((trip) => (
-          <MemoryCard key={trip.id} title={trip.title} date={trip.date} cardIndex={trip.id} />
+        {memories.map((memory) => (
+          <MemoryCard key={memory.memory_id} title={memory.title} imageUrl={memory.cover_img_url} date={memory.date} cardIndex={memory.memory_id}/>
         ))}
       </div>
     </div>

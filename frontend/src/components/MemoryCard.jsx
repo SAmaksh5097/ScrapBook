@@ -23,7 +23,7 @@ const MemoryCard = ({ title,  imageUrl, cardIndex, date}) => {
 
         <div className='space-y-1 px-1 pt-1'>
             <h1 className='text-base font-semibold leading-tight'>{title}</h1>
-            <p className='text-sm text-zinc-600'>{date}</p>
+            <p className='text-sm text-zinc-600'>{new Date(date).toLocaleDateString("en-US",{month:"short", year:"numeric"})}</p>
         </div>
 
         <div className='mt-auto flex justify-end px-1 text-zinc-700 transition duration-300 group-hover:translate-x-1 group-hover:text-black'>

@@ -10,9 +10,11 @@ export const addMemory = async (req, res) => {
 };
   
 export const getUserMemories = async (req,res)=>{
-  const userId = parseInt(req.body.userId);
+  const userId = parseInt(req.params.userId);
   const year = req.params.year;
+  console.log(userId,year);
   
+
   try{
     const memories = await MemoryModel.getyearMemoriesByUserId(userId, year);
     if(memories.length === 0){

@@ -4,6 +4,6 @@ import { addMemory, getMemoryById, getUserMemories } from '../controllers/memory
 const router = express.Router();
 
 router.post('/', addMemory);
-router.get('/user/:year', getUserMemories);
+router.get('/:userId/:year', getUserMemories);
 
 export default router;

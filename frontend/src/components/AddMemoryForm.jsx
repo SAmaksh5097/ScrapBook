@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { addMemory } from '../services/api/memoryApi'
 
 const AddMemoryForm = ({ onSubmit, onCancel }) => {
   const [title, setTitle] = useState('')
@@ -19,20 +20,7 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
     }
 
     try{
-      const response = await fetch(`http://localhost:5000/api/memories`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_id: user_id,
-          title: title.trim(),
-          date: date,
-          cover_img_url: imageUrl.trim(),
-          description: desc.trim(),
-          location: location.trim()
-        })
-      })
+      await addMemory(user_id, title, date, imageUrl, location, desc)
     } catch (err){
       console.error('Error adding memory:', err);
     }
@@ -46,7 +34,7 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
         imageUrl: imageUrl.trim(),
         desc: desc.trim(),
         location: location.trim()
-      })
+      });
     }
 
     setTitle('')
@@ -54,6 +42,7 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
     setImageUrl('')
     setDesc('')
     setLocation('')
+
   }
 
   return (

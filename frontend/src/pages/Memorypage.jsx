@@ -1,54 +1,33 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Camera } from 'lucide-react'
 import Momentcard from '../components/Momentcard'
 import AddMomentForm from '../components/AddMomentForm'
 import {useParams} from 'react-router-dom'
-
+import { fetchMemoryDetails } from '../services/api/memoryApi'
+import { fetchMoments } from '../services/api/momentApi'
 const Memorypage = () => {
     const [moments, setMoments] = useState([])
 
     const [memoryDetails, setMemoryDetails] = useState(null)
 
-      const { memoryId } = useParams();
+    const { memoryId } = useParams();
 
-    async function fetchMoments() {
-      try {
-        const response = await fetch(`http://localhost:5000/api/moments/${memoryId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
+    const loadMemoryPageData = useCallback(async () => {
+      const [momentsData, detailsData] = await Promise.all([
+        fetchMoments(memoryId),
+        fetchMemoryDetails(memoryId)
+      ])
 
-        const data = await response.json()
-
-        setMoments(data)
-      } catch (err) {
-        console.error('Error fetching moments:', err)
+      return {
+        momentsData: momentsData || [],
+        detailsData,
       }
-    }
+    }, [memoryId])
 
     useEffect(() => {
       const loadData = async () => {
         try {
-          const [momentsResponse, detailsResponse] = await Promise.all([
-            fetch(`http://localhost:5000/api/moments/${memoryId}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            }),
-            fetch(`http://localhost:5000/api/memories/${memoryId}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            })
-          ])
-
-          const momentsData = await momentsResponse.json()
-          const detailsData = await detailsResponse.json()
-
+          const { momentsData, detailsData } = await loadMemoryPageData()
           setMoments(momentsData)
           setMemoryDetails(detailsData)
         } catch (err) {
@@ -57,7 +36,16 @@ const Memorypage = () => {
       }
 
       void loadData()
-    }, [memoryId])
+    }, [loadMemoryPageData])
+
+    const refreshMoments = async () => {
+      try {
+        const data = await fetchMoments(memoryId)
+        setMoments(data || [])
+      } catch (err) {
+        console.error('Error fetching moments:', err)
+      }
+    }
 
 
     const [showAddForm, setShowAddForm] = useState(false)
@@ -80,13 +68,13 @@ const Memorypage = () => {
         </div>
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
           {moments.map((moment) => (
-            <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={fetchMoments} />
+            <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={refreshMoments} />
           ))}
         </div> 
 
         {showAddForm && (
           <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'>
-            <AddMomentForm onSubmit={fetchMoments} onCancel={() => setShowAddForm(false)} />
+            <AddMomentForm onSubmit={refreshMoments} onCancel={() => setShowAddForm(false)} />
           </div>
         )}
 

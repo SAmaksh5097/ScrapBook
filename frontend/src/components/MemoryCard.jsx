@@ -1,4 +1,4 @@
-import { PencilIcon } from 'lucide-react'
+import { PencilIcon, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
 const MemoryCard = ({ title,  imageUrl, cardIndex, date}) => {
   const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
@@ -27,7 +27,8 @@ const MemoryCard = ({ title,  imageUrl, cardIndex, date}) => {
             <p className='text-sm text-zinc-600'>{new Date(date).toLocaleDateString("en-US",{month:"short", year:"numeric"})}</p>
         </div>
 
-        <div className='mt-auto flex justify-end px-1 text-zinc-700 transition duration-300 group-hover:translate-x-1 group-hover:text-black'>
+        <div className='mt-auto flex justify-end px-1 gap-4 text-zinc-700 transition duration-300 group-hover:translate-x-1 group-hover:text-black'>
+            <Trash size={18}/>
             <Link to={`/dashboard/${year}/${cardIndex}`}>
                 <PencilIcon size={18} />
             </Link>

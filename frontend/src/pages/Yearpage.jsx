@@ -2,33 +2,46 @@ import { useState, useEffect, useCallback } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Link, useParams } from 'react-router-dom'
+import { fetchMemories } from '../services/api/memoryApi'
 
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [memories, setMemories] = useState([])
   const { year } = useParams()
+  const userId = 1234; // in future, get this from auth context
 
-  const fetchMemories = useCallback(async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/memories/1234/${year}`)
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch memories')
-      }
-
-      const data = await response.json()
-      setMemories(data)
-    } catch (error) {
-      console.error('Failed to fetch memories:', error)
-    }
-  }, [year])
+  const fetchMemoriesData = useCallback(async () => {
+    return fetchMemories(userId, year)
+  }, [userId, year])
 
   useEffect(() => {
-    fetchMemories()
-  }, [fetchMemories])
+      let isActive = true
+
+      const loadMemories = async () => {
+        try {
+          const data = await fetchMemoriesData()
+          if (isActive) {
+            setMemories(data || [])
+          }
+        } catch (error) {
+          console.error('Failed to fetch memories:', error)
+        }
+      }
+
+      loadMemories()
+
+      return () => {
+        isActive = false
+      }
+    }, [fetchMemoriesData])
 
   const handleAddMemory = async () => {
-    await fetchMemories()
+      try {
+        const data = await fetchMemoriesData()
+        setMemories(data || [])
+      } catch (error) {
+        console.error('Failed to fetch memories:', error)
+      }
     setIsFormOpen(false)
   }
 

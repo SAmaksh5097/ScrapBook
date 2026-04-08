@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { addMoment } from '../services/api/momentApi'
 
 const AddMomentForm = ({onSubmit,onCancel }) => {
   const [title, setTitle] = useState('')
@@ -19,23 +20,7 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
     }
 
     try{
-      const response = await fetch(`http://localhost:5000/api/moments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          memory_id: memoryId,
-          title: title.trim(),
-          day,
-          img_url: trimmedImageUrl,
-          description: desc.trim()
-        })
-      }); 
-
-      if (!response.ok) {
-        throw new Error('Failed to add moment');
-      }
+      await addMoment(memoryId, title, day, trimmedImageUrl, desc)
 
       if (onSubmit) {
         await onSubmit()

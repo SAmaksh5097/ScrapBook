@@ -2,58 +2,45 @@ import { useState, useEffect, useCallback } from 'react'
 import DashboardCard from '../components/DashboardCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Plus } from 'lucide-react'
+import { fetchYears } from '../services/api/memoryApi'
 const Dashboard = () => {
   const[years,setYears] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const userId = 1234; // in future, get this from auth context 
-  const fetchYears = useCallback(async () => {
-    try{
-      const response = await fetch(`http://localhost:5000/api/memories/years/${userId}`,{
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      const data = await response.json();
-      setYears(data);
 
-    } catch(err){
-      console.error('Error fetching years:', err)
-    }  
+  const fetchYearsData = useCallback(async () => {
+    return fetchYears(userId)
   }, [userId]);
 
   useEffect(() => {
-    let isActive = true;
+    let isActive = true
 
     const loadYears = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/memories/years/${userId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-
-        const data = await response.json();
-
+        const data = await fetchYearsData()
         if (isActive) {
-          setYears(data);
+          setYears(data)
         }
       } catch (err) {
         console.error('Error fetching years:', err)
       }
     }
 
-    loadYears();
+    loadYears()
 
     return () => {
-      isActive = false;
+      isActive = false
     }
-  }, [userId]);
+  }, [fetchYearsData]);
 
   const handleAddMemory = async () => {
-    await fetchYears();
+    try {
+      const data = await fetchYearsData()
+      setYears(data)
+    } catch (err) {
+      console.error('Error fetching years:', err)
+    }
     setIsFormOpen(false);
   }
 

@@ -1,6 +1,6 @@
-import React from 'react'
 import { Trash } from 'lucide-react'
 import { useParams } from 'react-router-dom'
+import { deleteMoment } from '../services/api/momentApi'
 const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSuccess }) => {
     const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
   const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
@@ -13,17 +13,7 @@ const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSucc
       return;
     }
     try{
-      const response = await fetch(`http://localhost:5000/api/moments`,{
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({momentId: cardIndex, memoryId: memory_id})
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete moment')
-      }
+      await deleteMoment(cardIndex, memory_id)
 
       if (onDeleteSuccess) {
         await onDeleteSuccess()

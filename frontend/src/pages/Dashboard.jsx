@@ -20,7 +20,7 @@ const Dashboard = () => {
 
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
           {trips.map((trip) => (
-            <DashboardCard key={trip.id} title={trip.title} cardIndex={trip.id} year={trip.year} />
+            <DashboardCard key={trip.id} title={trip.title} imageUrl="https://picsum.photos/id/1015/600/400" cardIndex={trip.id} year={trip.year} />
           ))}
         </div>
       </div>

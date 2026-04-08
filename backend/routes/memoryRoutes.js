@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post('/', addMemory);
 router.get('/:userId/:year', getUserMemories);
+router.get('/:memoryId', getMemoryById);
 
 export default router;

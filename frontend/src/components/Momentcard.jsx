@@ -1,6 +1,6 @@
 import React from 'react'
 import { Trash } from 'lucide-react'
-const Momentcard = ({ title, imageUrl, date, desc, cardIndex = 0 }) => {
+const Momentcard = ({ title, img_url, date, description, cardIndex }) => {
     const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
   const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
   return (
@@ -9,9 +9,9 @@ const Momentcard = ({ title, imageUrl, date, desc, cardIndex = 0 }) => {
         </div>
 
         <div className='overflow-hidden border border-zinc-300 bg-white p-1'>
-            {imageUrl ? (
+            {img_url ? (
               <img
-                src={imageUrl}
+                src={img_url}
                 alt={title}
                 className='h-40 w-full object-cover transition duration-300 group-hover:scale-[1.03]'
               />
@@ -22,10 +22,10 @@ const Momentcard = ({ title, imageUrl, date, desc, cardIndex = 0 }) => {
 
         <div className='space-y-1 px-1 pt-1'>
             <h1 className='text-base font-semibold leading-tight'>{title}</h1>
-            <p className='text-sm text-zinc-600'>{date}</p>
+            <p className='text-sm text-zinc-600'>{new Date(date).toLocaleDateString("en-Us",{day: 'numeric', month: 'short'})}</p>
         </div>
         <div className='border-t border-zinc-300 pt-1 px-1'>
-            <p className='text-sm text-zinc-700'>{desc}</p>
+            <p className='text-sm text-zinc-700'>{description}</p>
         </div>
         
 

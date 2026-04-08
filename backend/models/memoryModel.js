@@ -36,7 +36,7 @@ class MemoryModel{
 
   static async getMemoryById(memoryId){
     const sql = `
-      SELECT * FROM memory_data WHERE id=$1;
+      SELECT * FROM memory_data WHERE memory_id=$1;
     `;
 
     try{

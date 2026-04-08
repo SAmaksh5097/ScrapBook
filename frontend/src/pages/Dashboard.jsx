@@ -1,12 +1,30 @@
+import { useState, useEffect } from 'react'
 import DashboardCard from '../components/DashboardCard'
 import { Plus } from 'lucide-react'
 const Dashboard = () => {
-  const trips = [
-    { id: 1, title: 'Year 2023', year: 2023 },
-    { id: 2, title: 'Year 2024', year: 2024 },
-    { id: 3, title: 'Year 2025', year: 2025 },
-    { id: 4, title: 'Year 2026', year: 2026 },
-  ]
+  const[years,setYears] = useState([]);
+
+  const userId = 1234; // in future, get this from auth context 
+  async function fetchYears(){
+    try{
+      const response = await fetch(`http://localhost:5000/api/memories/years/${userId}`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const data = await response.json();
+      console.log(data);
+      setYears(data);
+
+    } catch(err){
+      console.error('Error fetching years:', err)
+    }  
+  }
+
+  useEffect(() => {
+    fetchYears();
+  }, []);
 
   return (
     <div className='min-h-screen h-fit bg-black text-white py-10 px-4 md:px-10'>
@@ -19,8 +37,8 @@ const Dashboard = () => {
         </div>
 
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-          {trips.map((trip) => (
-            <DashboardCard key={trip.id} title={trip.title} imageUrl="https://picsum.photos/id/1015/600/400" cardIndex={trip.id} year={trip.year} />
+          {years.map((year) => (
+            <DashboardCard key={year} title={`Year ${year.year}`}  year={year.year} />
           ))}
         </div>
       </div>

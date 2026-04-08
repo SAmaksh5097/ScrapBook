@@ -46,6 +46,20 @@ class MemoryModel{
       throw new Error('Error fetching memory: ' + err.message);
     }
   }
+
+
+  static async getDistinctYears(userId){
+    const sql = `
+      SELECT DISTINCT EXTRACT(year FROM date) as year FROM memory_data WHERE user_id=$1 ORDER BY year;
+    `;
+    try{
+      const result = await query(sql, [userId]);
+      
+      return result.rows;
+    } catch (err){
+      throw new Error('Error fetching distinct years: ' + err.message);
+    }
+  }
 }
 
 export default MemoryModel;

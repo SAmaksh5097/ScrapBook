@@ -12,7 +12,6 @@ export const addMemory = async (req, res) => {
 export const getUserMemories = async (req,res)=>{
   const userId = parseInt(req.params.userId);
   const year = req.params.year;
-  console.log(userId,year);
   
 
   try{
@@ -35,3 +34,15 @@ export const getMemoryById = async (req,res)=>{
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getDistinctYears = async (req,res)=>{
+  
+  const userId = parseInt(req.params.userId,10);
+  
+  try{
+    const years = await MemoryModel.getDistinctYears(userId);
+    res.status(200).json(years);
+  } catch (err){
+    res.status(500).json({ error: err.message });
+  }
+}

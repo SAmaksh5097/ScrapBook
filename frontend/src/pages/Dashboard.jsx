@@ -16,7 +16,6 @@ const Dashboard = () => {
         }
       })
       const data = await response.json();
-      console.log(data);
       setYears(data);
 
     } catch(err){
@@ -79,7 +78,7 @@ const Dashboard = () => {
 
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
           {years.map((year) => (
-            <DashboardCard key={year.year} title={`Year ${year.year}`} cardIndex={year.year} year={year.year} />
+            <DashboardCard key={year.year} title={`${year.year}`} cardIndex={year.year} year={year.year} />
           ))}
         </div>
       </div>

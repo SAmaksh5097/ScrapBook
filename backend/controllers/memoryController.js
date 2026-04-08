@@ -2,7 +2,13 @@ import MemoryModel from "../models/memoryModel.js";
 
 export const addMemory = async (req, res) => {
   try{
-    const memory = await MemoryModel.createMemory(req.body);
+    const { date } = req.body;
+    const normalizedDate = /^\d{4}-\d{2}$/.test(date) ? `${date}-01` : date;
+
+    const memory = await MemoryModel.createMemory({
+      ...req.body,
+      date: normalizedDate,
+    });
     res.status(201).json({ message: "Memory added successfully!", memory });
   } catch (err){
     res.status(500).json({ error: err.message });

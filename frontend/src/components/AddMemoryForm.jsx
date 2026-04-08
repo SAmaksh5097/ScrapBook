@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 const AddMemoryForm = ({ onSubmit, onCancel }) => {
   const [title, setTitle] = useState('')
@@ -6,6 +7,7 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [desc, setDesc] = useState('')
   const [location, setLocation] = useState('')
+  const { year } = useParams()
 
   const user_id = 1234; // will change it later to dynamic value based on logged in user
 
@@ -78,15 +80,17 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
 
         <div className='space-y-1'>
           <label htmlFor='date' className='text-sm font-medium text-zinc-100'>
-            Date <span className='text-rose-300'>*</span>
+            Month & Year <span className='text-rose-300'>*</span>
           </label>
           <input
-            type='date'
+            type='month'
             id='date'
             name='date'
             value={date}
             onChange={(event) => setDate(event.target.value)}
             required
+            min={year ? `${year}-01` : undefined}
+            max={year ? `${year}-12` : undefined}
             className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm outline-none transition focus:border-amber-400'
           />
         </div>

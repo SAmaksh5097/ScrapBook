@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 const AddMomentForm = ({onSubmit,onCancel }) => {
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState('')
+  const [day, setDay] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [desc, setDesc] = useState('')
 
@@ -14,7 +14,7 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
 
     const trimmedImageUrl = imageUrl.trim()
 
-    if (!title.trim() || !date || !trimmedImageUrl) {
+    if (!title.trim() || !day || !trimmedImageUrl) {
       return
     }
 
@@ -27,7 +27,7 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
         body: JSON.stringify({
           memory_id: memoryId,
           title: title.trim(),
-          date,
+          day,
           img_url: trimmedImageUrl,
           description: desc.trim()
         })
@@ -50,7 +50,7 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
     }
 
     setTitle('')
-    setDate('')
+    setDay('')
     setImageUrl('')
     setDesc('')
   }
@@ -79,15 +79,18 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
 
         <div className='space-y-1'>
           <label htmlFor='date' className='text-sm font-medium text-zinc-100'>
-            Date <span className='text-rose-300'>*</span>
+            Day <span className='text-rose-300'>*</span>
           </label>
           <input
-            type='date'
+            type='number'
             id='date'
             name='date'
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
+            value={day}
+            onChange={(event) => setDay(event.target.value)}
             required
+            min='1'
+            max='31'
+            placeholder='Enter day (1-31)'
             className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm outline-none transition focus:border-amber-400'
           />
         </div>

@@ -32,6 +32,19 @@ class MomentModel{
         throw new Error('Error fetching moments: ' + err.message);
       }
   }
+
+  static async deleteMoment(momentId, memoryId){
+    const sql = `
+      DELETE FROM moment_data WHERE moment_id=$1 AND memory_id=$2 RETURNING *;
+    `;
+    try{
+      const result = await query(sql, [momentId, memoryId]);
+      
+      return result.rows[0];
+    } catch (err){      
+      throw new Error('Error deleting moment: ' + err.message);
+    }
+  }
 }
 
 export default MomentModel;

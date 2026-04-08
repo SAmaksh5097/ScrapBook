@@ -1,8 +1,6 @@
 import { MoveRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 const DashboardCard = ({ title, year, cardIndex = 0 }) => {
-  const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
-  const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
   const accentStyles = [
     'from-white/18 via-white/6 to-transparent',
     'from-amber-300/30 via-orange-300/10 to-transparent',
@@ -12,7 +10,7 @@ const DashboardCard = ({ title, year, cardIndex = 0 }) => {
   const accentClass = accentStyles[cardIndex % accentStyles.length]
 
   return (
-    <article className={`group relative mx-auto flex h-full w-full max-w-sm cursor-default flex-col overflow-hidden rounded-4xl border border-white/10 bg-[#131313] p-4 text-white shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur-xl transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0 hover:border-white/20 hover:shadow-[0_28px_80px_rgba(0,0,0,0.42)] ${tiltClass}`}>
+    <article className={`group relative mx-auto flex h-full w-full max-w-sm cursor-default flex-col overflow-hidden rounded-4xl border border-white/10 bg-[#131313] p-4 text-white shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur-xl transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0 hover:border-white/20 hover:shadow-[0_28px_80px_rgba(0,0,0,0.42)]`}>
     <div className={`absolute inset-0 bg-linear-to-br ${accentClass}`}></div>
     <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,191,0,0.14),transparent_38%)]'></div>
 

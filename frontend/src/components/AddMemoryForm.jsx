@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { addMemory } from '../services/api/memoryApi'
 
 const AddMemoryForm = ({ onSubmit, onCancel }) => {
@@ -46,7 +47,12 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
   }
 
   return (
-    <div className='w-full max-w-xl rounded-xl border border-white/20 bg-zinc-900/90 p-4 text-white shadow-2xl backdrop-blur-sm max-h-[90vh] overflow-y-auto sm:p-6'>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.18, ease: 'easeOut' }}
+      className='w-full max-w-xl rounded-xl border border-white/20 bg-zinc-900/90 p-4 text-white shadow-2xl backdrop-blur-sm max-h-[90vh] overflow-y-auto sm:p-6'
+    >
       <h1 className='text-xl sm:text-2xl font-semibold tracking-wide'>New Memory</h1>
       <p className='mt-1 text-xs sm:text-sm text-zinc-300'>Fill in the details to add your memory.</p>
 
@@ -146,7 +152,7 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
           </button>
         </div>
       </form>
-    </div>
+    </motion.div>
   )
 }
 

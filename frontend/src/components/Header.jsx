@@ -1,9 +1,15 @@
 import React from 'react'
 import Icon from '../assets/favicon.png'
 import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
 const Header = () => {
   return (
-    <div className='border-b border-white/35 bg-[#131313] px-4 py-3 backdrop-blur text-white md:px-10'>
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className='border-b border-white/35 bg-[#131313] px-4 py-3 backdrop-blur text-white md:px-10'
+    >
         <div className='mx-auto flex w-full max-w-7xl items-center justify-between'>
           <Link to={'/'} >
             <div className='flex items-center justify-center gap-2 cursor-pointer'>
@@ -17,7 +23,7 @@ const Header = () => {
           </div>
         </div>
       
-    </div>
+    </motion.div>
   )
 }
 

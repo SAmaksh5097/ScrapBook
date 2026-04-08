@@ -3,6 +3,7 @@ import { Camera } from 'lucide-react'
 import Momentcard from '../components/Momentcard'
 import AddMomentForm from '../components/AddMomentForm'
 import {useParams} from 'react-router-dom'
+import { motion } from 'motion/react'
 import { fetchMemoryDetails } from '../services/api/memoryApi'
 import { fetchMoments } from '../services/api/momentApi'
 const Memorypage = () => {
@@ -51,7 +52,12 @@ const Memorypage = () => {
     const [showAddForm, setShowAddForm] = useState(false)
 
   return (
-    <div className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'
+    >
         <div className='flex justify-between border-b border-white/30 pb-5 mb-5 items-center'>
             <div>
                 <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>
@@ -73,14 +79,20 @@ const Memorypage = () => {
         </div> 
 
         {showAddForm && (
-          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'
+          >
             <AddMomentForm onSubmit={refreshMoments} onCancel={() => setShowAddForm(false)} />
-          </div>
+          </motion.div>
         )}
 
 
       
-    </div>
+    </motion.div>
   )
 }
 

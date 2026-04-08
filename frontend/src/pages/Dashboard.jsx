@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import DashboardCard from '../components/DashboardCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Plus } from 'lucide-react'
+import { motion } from 'motion/react'
 import { fetchYears } from '../services/api/memoryApi'
 const Dashboard = () => {
   const[years,setYears] = useState([]);
@@ -45,7 +46,12 @@ const Dashboard = () => {
   }
 
   return (
-    <div className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'
+    >
       <div className='mx-auto w-full max-w-7xl'>
         <div className='mb-8 flex  items-center justify-between'>
           <h1 className='text-2xl font-semibold tracking-wide md:text-4xl'>My Scrapbook Memories</h1>
@@ -58,9 +64,15 @@ const Dashboard = () => {
         </div>
 
         {isFormOpen && (
-          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4'>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4'
+          >
             <AddMemoryForm onSubmit={handleAddMemory} onCancel={() => setIsFormOpen(false)} />
-          </div>
+          </motion.div>
         )}
 
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
@@ -69,7 +81,7 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

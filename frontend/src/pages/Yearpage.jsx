@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Link, useParams } from 'react-router-dom'
+import { motion as Motion } from 'motion/react'
 import { fetchMemories, deleteMemory } from '../services/api/memoryApi'
 
 const Yearpage = () => {
@@ -62,7 +63,12 @@ const Yearpage = () => {
   }
 
   return (
-    <div className='w-full flex flex-col gap-5 bg-black text-white py-10 px-4 md:px-10 pb-20'>
+    <Motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className='w-full flex flex-col gap-5 bg-black text-white py-10 px-4 md:px-10 pb-20'
+    >
       <div className='flex justify-between'>
         <h1 className='text-4xl'>{year} Archive</h1>
         <div className='flex gap-2'>
@@ -81,9 +87,15 @@ const Yearpage = () => {
       </div>
 
       {isFormOpen && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4'>
+        <Motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15, ease: 'easeOut' }}
+          className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4'
+        >
           <AddMemoryForm onSubmit={handleAddMemory} onCancel={() => setIsFormOpen(false)} />
-        </div>
+        </Motion.div>
       )}
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
@@ -99,7 +111,7 @@ const Yearpage = () => {
           />
         ))}
       </div>
-    </div>
+    </Motion.div>
   )
 }
 

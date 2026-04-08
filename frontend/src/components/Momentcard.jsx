@@ -1,5 +1,6 @@
 import { Trash } from 'lucide-react'
 import { useParams } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { deleteMoment } from '../services/api/momentApi'
 const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSuccess }) => {
     const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
@@ -26,7 +27,13 @@ const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSucc
 
 
   return (
-    <article className={`group relative mx-auto flex h-full w-full max-w-sm cursor-default flex-col gap-3 border border-zinc-300 bg-[linear-gradient(to_top_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))]  p-3 text-black shadow-[0_8px_20px_rgba(0,0,0,0.3)] transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0 hover:shadow-[0_14px_26px_rgba(0,0,0,0.4)] ${tiltClass}`}>
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, delay: (cardIndex % 8) * 0.02 }}
+      viewport={{ once: true }}
+      className={`group relative mx-auto flex h-full w-full max-w-sm cursor-default flex-col gap-3 border border-zinc-300 bg-[linear-gradient(to_top_right,rgb(183,224,255),rgb(255,245,205),rgb(255,207,179))]  p-3 text-black shadow-[0_8px_20px_rgba(0,0,0,0.3)] transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0 hover:shadow-[0_14px_26px_rgba(0,0,0,0.4)] ${tiltClass}`}
+    >
         <div className='absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full border border-zinc-200 bg-rose-500 shadow-[0_1px_4px_rgba(0,0,0,0.4)]'>
         </div>
 
@@ -55,7 +62,7 @@ const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSucc
             <Trash size={18} onClick={handleDelete} />
         </div>
 
-    </article>
+    </motion.article>
   )
 }
 

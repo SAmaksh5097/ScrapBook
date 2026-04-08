@@ -52,3 +52,26 @@ export const getDistinctYears = async (req,res)=>{
     res.status(500).json({ error: err.message });
   }
 }
+
+export const deleteMemory = async (req, res) => {
+  const memoryId = parseInt(req.params.memoryId, 10);
+
+  if (Number.isNaN(memoryId)) {
+    return res.status(400).json({ error: 'Invalid memory id.' });
+  }
+
+  try {
+    const deletedMemory = await MemoryModel.deleteMemoryWithMoments(memoryId);
+
+    if (!deletedMemory) {
+      return res.status(404).json({ message: 'Memory not found.' });
+    }
+
+    return res.status(200).json({
+      message: 'Memory and related moments deleted successfully!',
+      memory: deletedMemory,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};

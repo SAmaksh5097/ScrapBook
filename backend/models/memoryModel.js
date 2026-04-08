@@ -1,4 +1,4 @@
-import { query } from '../config/db.js';
+import pool, { query } from '../config/db.js';
 
 class MemoryModel{
   static async createMemory(memoryData){
@@ -58,6 +58,29 @@ class MemoryModel{
       return result.rows;
     } catch (err){
       throw new Error('Error fetching distinct years: ' + err.message);
+    }
+  }
+
+  static async deleteMemoryWithMoments(memoryId){
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      await client.query('DELETE FROM moment_data WHERE memory_id=$1;', [memoryId]);
+
+      const memoryResult = await client.query(
+        'DELETE FROM memory_data WHERE memory_id=$1 RETURNING *;',
+        [memoryId]
+      );
+
+      await client.query('COMMIT');
+      return memoryResult.rows[0] || null;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw new Error('Error deleting memory: ' + err.message);
+    } finally {
+      client.release();
     }
   }
 }

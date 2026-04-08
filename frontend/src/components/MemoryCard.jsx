@@ -1,6 +1,6 @@
 import { PencilIcon, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
-const MemoryCard = ({ title,  imageUrl, cardIndex, date}) => {
+const MemoryCard = ({ title, imageUrl, cardIndex, date, memoryId, onDelete }) => {
   const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
   const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
 
@@ -28,7 +28,14 @@ const MemoryCard = ({ title,  imageUrl, cardIndex, date}) => {
         </div>
 
         <div className='mt-auto flex justify-end px-1 gap-4 text-zinc-700 transition duration-300 group-hover:translate-x-1 group-hover:text-black'>
-            <Trash size={18}/>
+            <button
+              type='button'
+              onClick={() => onDelete?.(memoryId)}
+              className='cursor-pointer hover:text-red-600'
+              aria-label='Delete memory'
+            >
+              <Trash size={18}/>
+            </button>
             <Link to={`/dashboard/${year}/${cardIndex}`}>
                 <PencilIcon size={18} />
             </Link>

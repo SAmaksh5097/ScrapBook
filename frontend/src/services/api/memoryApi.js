@@ -72,3 +72,24 @@ export const addMemory = async (user_id, title, date, cover_img_url, location, d
       console.error('Error adding memory:', err);
     }
 }
+
+// used to delete a memory and its related moments, used in Yearpage.jsx
+export const deleteMemory = async (memoryId) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/memories/${memoryId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to delete memory')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Failed to delete memory:', error)
+    throw error
+  }
+}

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
 import { Link, useParams } from 'react-router-dom'
-import { fetchMemories } from '../services/api/memoryApi'
+import { fetchMemories, deleteMemory } from '../services/api/memoryApi'
 
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -45,6 +45,22 @@ const Yearpage = () => {
     setIsFormOpen(false)
   }
 
+  const handleDeleteMemory = async (memoryId) => {
+    const isConfirmed = window.confirm('Delete this memory and all associated moments?')
+
+    if (!isConfirmed) {
+      return
+    }
+
+    try {
+      await deleteMemory(memoryId)
+      const data = await fetchMemoriesData()
+      setMemories(data || [])
+    } catch (error) {
+      console.error('Failed to delete memory:', error)
+    }
+  }
+
   return (
     <div className='min-h-screen h-fit flex flex-col gap-5  bg-black text-white py-10 px-4 md:px-10'>
       <div className='flex justify-between'>
@@ -72,7 +88,15 @@ const Yearpage = () => {
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
         {memories.map((memory) => (
-          <MemoryCard key={memory.memory_id} title={memory.title} imageUrl={memory.cover_img_url} date={memory.date} cardIndex={memory.memory_id}/>
+          <MemoryCard
+            key={memory.memory_id}
+            title={memory.title}
+            imageUrl={memory.cover_img_url}
+            date={memory.date}
+            cardIndex={memory.memory_id}
+            memoryId={memory.memory_id}
+            onDelete={handleDeleteMemory}
+          />
         ))}
       </div>
     </div>

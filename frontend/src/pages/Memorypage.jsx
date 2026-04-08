@@ -10,6 +10,7 @@ const Memorypage = () => {
     const [moments, setMoments] = useState([])
 
     const [memoryDetails, setMemoryDetails] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
     const { memoryId } = useParams();
 
@@ -27,12 +28,15 @@ const Memorypage = () => {
 
     useEffect(() => {
       const loadData = async () => {
+        setIsLoading(true)
         try {
           const { momentsData, detailsData } = await loadMemoryPageData()
           setMoments(momentsData)
           setMemoryDetails(detailsData)
         } catch (err) {
           console.error('Error loading memory page data:', err)
+        } finally {
+          setIsLoading(false)
         }
       }
 
@@ -40,11 +44,14 @@ const Memorypage = () => {
     }, [loadMemoryPageData])
 
     const refreshMoments = async () => {
+      setIsLoading(true)
       try {
         const data = await fetchMoments(memoryId)
         setMoments(data || [])
       } catch (err) {
         console.error('Error fetching moments:', err)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -60,9 +67,19 @@ const Memorypage = () => {
     >
         <div className='flex justify-between border-b border-white/30 pb-5 mb-5 items-center'>
             <div>
-                <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>
-                <p className='text-sm text-white/70 '>{memoryDetails ? memoryDetails.description : ''}</p>
-                <p className='text-sm text-white/90'>{memoryDetails ? new Date(memoryDetails.date).toLocaleDateString("en-US",{day: 'numeric', month: 'long', year: 'numeric'}) : ''}</p>
+                {isLoading ? (
+                  <div className='space-y-2 animate-pulse'>
+                    <div className='h-8 w-52 rounded bg-white/15'></div>
+                    <div className='h-4 w-72 rounded bg-white/10'></div>
+                    <div className='h-4 w-40 rounded bg-white/10'></div>
+                  </div>
+                ) : (
+                  <>
+                    <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>
+                    <p className='text-sm text-white/70 '>{memoryDetails ? memoryDetails.description : ''}</p>
+                    <p className='text-sm text-white/90'>{memoryDetails ? new Date(memoryDetails.date).toLocaleDateString("en-US",{day: 'numeric', month: 'long', year: 'numeric'}) : ''}</p>
+                  </>
+                )}
             </div>
             <button
               onClick={() => setShowAddForm(true)}
@@ -73,9 +90,25 @@ const Memorypage = () => {
             </button>
         </div>
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-          {moments.map((moment) => (
-            <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={refreshMoments} />
-          ))}
+          {isLoading
+            ? Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={`moment-skeleton-${index}`}
+                className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3 border border-zinc-300 bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
+              >
+                <div className='h-40 w-full border border-zinc-700 bg-zinc-800'></div>
+                <div className='space-y-2 px-1 pt-1'>
+                  <div className='h-4 w-2/3 rounded bg-zinc-700'></div>
+                  <div className='h-3 w-1/3 rounded bg-zinc-700'></div>
+                </div>
+                <div className='border-t border-zinc-700 pt-2 px-1'>
+                  <div className='h-3 w-full rounded bg-zinc-700'></div>
+                </div>
+              </div>
+            ))
+            : moments.map((moment) => (
+              <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={refreshMoments} />
+            ))}
         </div> 
 
         {showAddForm && (

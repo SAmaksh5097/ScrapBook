@@ -8,6 +8,7 @@ import { fetchMemories, deleteMemory } from '../services/api/memoryApi'
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [memories, setMemories] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const { year } = useParams()
   const userId = 1234; // in future, get this from auth context
 
@@ -19,6 +20,7 @@ const Yearpage = () => {
       let isActive = true
 
       const loadMemories = async () => {
+        setIsLoading(true)
         try {
           const data = await fetchMemoriesData()
           if (isActive) {
@@ -26,6 +28,10 @@ const Yearpage = () => {
           }
         } catch (error) {
           console.error('Failed to fetch memories:', error)
+        } finally {
+          if (isActive) {
+            setIsLoading(false)
+          }
         }
       }
 
@@ -37,11 +43,14 @@ const Yearpage = () => {
     }, [fetchMemoriesData])
 
   const handleAddMemory = async () => {
+      setIsLoading(true)
       try {
         const data = await fetchMemoriesData()
         setMemories(data || [])
       } catch (error) {
         console.error('Failed to fetch memories:', error)
+      } finally {
+        setIsLoading(false)
       }
     setIsFormOpen(false)
   }
@@ -99,17 +108,34 @@ const Yearpage = () => {
       )}
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-        {memories.map((memory) => (
-          <MemoryCard
-            key={memory.memory_id}
-            title={memory.title}
-            imageUrl={memory.cover_img_url}
-            date={memory.date}
-            cardIndex={memory.memory_id}
-            memoryId={memory.memory_id}
-            onDelete={handleDeleteMemory}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 8 }).map((_, index) => (
+            <div
+              key={`memory-skeleton-${index}`}
+              className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3 border border-zinc-300 bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
+            >
+              <div className='h-40 w-full border border-zinc-700 bg-zinc-800'></div>
+              <div className='space-y-2 px-1 pt-1'>
+                <div className='h-4 w-2/3 rounded bg-zinc-700'></div>
+                <div className='h-3 w-1/3 rounded bg-zinc-700'></div>
+              </div>
+              <div className='mt-auto flex justify-end gap-4 px-1'>
+                <div className='h-4 w-4 rounded bg-zinc-700'></div>
+                <div className='h-4 w-4 rounded bg-zinc-700'></div>
+              </div>
+            </div>
+          ))
+          : memories.map((memory) => (
+            <MemoryCard
+              key={memory.memory_id}
+              title={memory.title}
+              imageUrl={memory.cover_img_url}
+              date={memory.date}
+              cardIndex={memory.memory_id}
+              memoryId={memory.memory_id}
+              onDelete={handleDeleteMemory}
+            />
+          ))}
       </div>
     </Motion.div>
   )

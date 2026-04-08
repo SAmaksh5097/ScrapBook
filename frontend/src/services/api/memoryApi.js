@@ -7,11 +7,17 @@ export const fetchYears = (async (userId) => {
           'Content-Type': 'application/json'
         }
       })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch years')
+      }
+
       const data = await response.json();
-      return data;
+      return Array.isArray(data) ? data : [];
 
     } catch(err){
       console.error('Error fetching years:', err)
+      return []
     }  
 });
 

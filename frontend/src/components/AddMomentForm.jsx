@@ -1,30 +1,57 @@
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-const AddMomentForm = ({ onSubmit, onCancel }) => {
+const AddMomentForm = ({onSubmit,onCancel }) => {
   const [title, setTitle] = useState('')
-  const [month, setMonth] = useState('')
-  const [imageFile, setImageFile] = useState(null)
+  const [date, setDate] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [desc, setDesc] = useState('')
 
-  const handleSubmit = (event) => {
+  const { memoryId } = useParams();
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
-    if (!title.trim() || !month || !imageFile) {
+
+    const trimmedImageUrl = imageUrl.trim()
+
+    if (!title.trim() || !date || !trimmedImageUrl) {
       return
     }
 
-    if (onSubmit) {
-      onSubmit({
-        title: title.trim(),
-        month,
-        imageFile,
-        desc: desc.trim()
-      })
+    try{
+      const response = await fetch(`http://localhost:5000/api/moments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          memory_id: memoryId,
+          title: title.trim(),
+          date,
+          img_url: trimmedImageUrl,
+          description: desc.trim()
+        })
+      }); 
+
+      if (!response.ok) {
+        throw new Error('Failed to add moment');
+      }
+
+      if (onSubmit) {
+        await onSubmit()
+      }
+
+      if (onCancel) {
+        onCancel()
+      }
+      
+    } catch(err){
+      console.error('Error adding moment:', err);
     }
 
     setTitle('')
-    setMonth('')
-    setImageFile(null)
+    setDate('')
+    setImageUrl('')
     setDesc('')
   }
 
@@ -51,32 +78,34 @@ const AddMomentForm = ({ onSubmit, onCancel }) => {
         </div>
 
         <div className='space-y-1'>
-          <label htmlFor='month' className='text-sm font-medium text-zinc-100'>
-            Month & Year <span className='text-rose-300'>*</span>
+          <label htmlFor='date' className='text-sm font-medium text-zinc-100'>
+            Date <span className='text-rose-300'>*</span>
           </label>
           <input
-            type='month'
-            id='month'
-            name='month'
-            value={month}
-            onChange={(event) => setMonth(event.target.value)}
+            type='date'
+            id='date'
+            name='date'
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
             required
             className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm outline-none transition focus:border-amber-400'
           />
         </div>
 
         <div className='space-y-1'>
-          <label htmlFor='imageFile' className='text-sm font-medium text-zinc-100'>
+          <label htmlFor='imageUrl' className='text-sm font-medium text-zinc-100'>
             Image <span className='text-rose-300'>*</span>
           </label>
+
           <input
-            type='file'
-            id='imageFile'
-            name='imageFile'
-            accept='image/*'
+            type='url'
+            id='imageUrl'
+            name='imageUrl'
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
             required
-            onChange={(event) => setImageFile(event.target.files?.[0] || null)}
-            className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-amber-300 file:px-3 file:py-1 file:text-sm file:font-medium file:text-black hover:file:bg-amber-200'
+            placeholder='https://example.com/image.jpg'
+            className='w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm outline-none transition focus:border-amber-400'
           />
         </div>
 

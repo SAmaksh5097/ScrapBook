@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
 
   const [memories, setMemories] = useState([]);
 
+  const { year } = useParams();
+
   async function fetchMemories(){
-    const response = await fetch(`http://localhost:5000/api/memories/1234/2026`,{
+    const response = await fetch(`http://localhost:5000/api/memories/1234/${year}`,{
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -17,7 +19,7 @@ const Yearpage = () => {
 
     if(response.ok){
       const data = await response.json()
-      console.log('Memories for 2026:', data)
+      console.log(`Memories for ${year}:`, data)
       setMemories(data);
     } else {
       console.error('Failed to fetch memories')
@@ -57,7 +59,7 @@ const Yearpage = () => {
   return (
     <div className='min-h-screen h-fit flex flex-col gap-5  bg-black text-white py-10 px-4 md:px-10'>
       <div className='flex justify-between'>
-        <h1 className='text-4xl'>2024 Archive</h1>
+        <h1 className='text-4xl'>{year} Archive</h1>
         <div className='flex gap-2'>
           <button
             onClick={() => setIsFormOpen(true)}

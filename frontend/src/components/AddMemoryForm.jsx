@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { addMemory } from '../services/api/memoryApi'
+import { useAuth } from '@clerk/react'
 
 const AddMemoryForm = ({ onSubmit, onCancel }) => {
   const [title, setTitle] = useState('')
@@ -11,7 +12,7 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
   const [location, setLocation] = useState('')
   const { year } = useParams()
 
-  const user_id = 1234; // will change it later to dynamic value based on logged in user
+  const { userId, getToken } = useAuth()
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -21,7 +22,8 @@ const AddMemoryForm = ({ onSubmit, onCancel }) => {
     }
 
     try{
-      await addMemory(user_id, title, date, imageUrl, location, desc)
+      const token = await getToken();
+      await addMemory(token, userId, title, date, imageUrl, location, desc)
     } catch (err){
       console.error('Error adding memory:', err);
     }

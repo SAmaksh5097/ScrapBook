@@ -7,6 +7,7 @@ import Yearpage from './pages/Yearpage'
 import Memorypage from './pages/Memorypage'
 import Yearbook from './pages/Yearbook'
 import { AnimatePresence, motion } from 'motion/react'
+import Error from './pages/Error'
 const App = () => {
   const location = useLocation()
 
@@ -27,7 +28,8 @@ const App = () => {
               <Route path='/dashboard' element={<Dashboard/>}/>
               <Route path='/dashboard/:year' element={<Yearpage/>}/>
               <Route path='/dashboard/:year/:memoryId' element={<Memorypage/>}/>
-              <Route path='/:year/yearbook' element={<Yearbook/>}/>
+              <Route path='dashboard/:year/yearbook' element={<Yearbook/>}/>
+              <Route path='*' element={<Error/>}/>
             </Routes>
           </motion.div>
         </AnimatePresence>

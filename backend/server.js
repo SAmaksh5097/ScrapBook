@@ -3,6 +3,9 @@ import cors from 'cors';
 import memoryRoutes from './routes/memoryRoutes.js';
 import momentRoutes from './routes/momentRoutes.js';
 const app = express();
+import dotenv from 'dotenv';
+import {clerkMiddleware, getAuth} from '@clerk/express'
+dotenv.config();
 
 const allowedOrigins = [
 	process.env.FRONTEND_URL,
@@ -25,6 +28,16 @@ app.use(
 );
 
 app.use(express.json());
+app.use(clerkMiddleware());
+
+app.get('/protected',(req,res)=>{
+	const {userId} = getAuth(req);
+	if(!userId){
+		return res.status(401).json({error: 'Unauthorized'});
+	}
+	res.status(200).json({message: 'This is protected data.', userId});
+})
+
 
 app.use('/api/memories', memoryRoutes);
 

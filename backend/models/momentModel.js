@@ -2,15 +2,15 @@ import { query } from '../config/db.js';
 
 class MomentModel{
     static async createMoment(momentData){
-    const {memory_id,date,title,img_url,description} = momentData;
+    const {clerk_user_id,memory_id,date,title,img_url,description} = momentData;
     const sql = `
       insert into moment_data (
-	memory_id, date, title, img_url, description) values (
-	$1, $2, $3, $4, $5)
+	clerk_user_id, memory_id, date, title, img_url, description) values (
+	$1, $2, $3, $4, $5, $6)
     returning *;
     `;
 
-    const values = [memory_id, date, title, img_url, description];
+    const values = [clerk_user_id, memory_id, date, title, img_url, description];
 
     try{
       const result = await query(sql, values);
@@ -20,13 +20,13 @@ class MomentModel{
     }
   }
 
-  static async getMomentsByMemoryId(memoryId){
+  static async getMomentsByMemoryId(clerk_user_id, memoryId){
     const sql = `
-      SELECT * FROM moment_data WHERE memory_id=$1 ORDER BY date;`
+      SELECT * FROM moment_data WHERE clerk_user_id = $1 AND memory_id=$2 ORDER BY date;`
       ;
 
       try{
-        const result = await query(sql, [memoryId]);
+        const result = await query(sql, [clerk_user_id, memoryId]);
         return result.rows;
       } catch (err){
         throw new Error('Error fetching moments: ' + err.message);

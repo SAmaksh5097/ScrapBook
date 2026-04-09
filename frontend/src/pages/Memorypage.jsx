@@ -3,31 +3,45 @@ import { Camera } from 'lucide-react'
 import Momentcard from '../components/Momentcard'
 import AddMomentForm from '../components/AddMomentForm'
 import {useParams} from 'react-router-dom'
-import { motion } from 'motion/react'
+import { motion as Motion } from 'motion/react'
 import { fetchMemoryDetails } from '../services/api/memoryApi'
 import { fetchMoments } from '../services/api/momentApi'
+import { useAuth } from '@clerk/react'
 const Memorypage = () => {
     const [moments, setMoments] = useState([])
+
+  const { isLoaded, userId, getToken } = useAuth()
 
     const [memoryDetails, setMemoryDetails] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
     const { memoryId } = useParams();
 
-    const loadMemoryPageData = useCallback(async () => {
+  const loadMemoryPageData = useCallback(async () => {
+      if (!userId) {
+        return {
+          momentsData: [],
+          detailsData: null,
+        }
+      }
+
       const [momentsData, detailsData] = await Promise.all([
-        fetchMoments(memoryId),
-        fetchMemoryDetails(memoryId)
+        fetchMoments(userId, memoryId, getToken),
+        fetchMemoryDetails(memoryId, getToken)
       ])
 
       return {
         momentsData: momentsData || [],
         detailsData,
       }
-    }, [memoryId])
+    }, [memoryId, userId, getToken])
 
     useEffect(() => {
       const loadData = async () => {
+        if (!isLoaded) {
+          return
+        }
+
         setIsLoading(true)
         try {
           const { momentsData, detailsData } = await loadMemoryPageData()
@@ -41,12 +55,16 @@ const Memorypage = () => {
       }
 
       void loadData()
-    }, [loadMemoryPageData])
+    }, [isLoaded, loadMemoryPageData])
 
     const refreshMoments = async () => {
+      if (!userId) {
+        return
+      }
+
       setIsLoading(true)
       try {
-        const data = await fetchMoments(memoryId)
+        const data = await fetchMoments(userId, memoryId, getToken)
         setMoments(data || [])
       } catch (err) {
         console.error('Error fetching moments:', err)
@@ -59,7 +77,7 @@ const Memorypage = () => {
     const [showAddForm, setShowAddForm] = useState(false)
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -94,9 +112,9 @@ const Memorypage = () => {
             ? Array.from({ length: 8 }).map((_, index) => (
               <div
                 key={`moment-skeleton-${index}`}
-                className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3 border border-zinc-300 bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
+                className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3  bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
               >
-                <div className='h-40 w-full border border-zinc-700 bg-zinc-800'></div>
+                <div className='h-40 w-full bg-zinc-800'></div>
                 <div className='space-y-2 px-1 pt-1'>
                   <div className='h-4 w-2/3 rounded bg-zinc-700'></div>
                   <div className='h-3 w-1/3 rounded bg-zinc-700'></div>
@@ -112,7 +130,7 @@ const Memorypage = () => {
         </div> 
 
         {showAddForm && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -120,12 +138,12 @@ const Memorypage = () => {
             className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'
           >
             <AddMomentForm onSubmit={refreshMoments} onCancel={() => setShowAddForm(false)} />
-          </motion.div>
+          </Motion.div>
         )}
 
 
       
-    </motion.div>
+    </Motion.div>
   )
 }
 

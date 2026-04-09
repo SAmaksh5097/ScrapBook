@@ -3,7 +3,7 @@ import MemoryModel from "../models/memoryModel.js";
 
 export const addMoment = async (req,res)=>{
     try{
-        const { memory_id, day, date } = req.body;
+        const { clerk_user_id, memory_id, day, date } = req.body;
 
         let finalDate = date;
 
@@ -63,10 +63,11 @@ export const addMoment = async (req,res)=>{
 }
 
 export const getMomentsByMemoryId = async (req,res)=>{
+    const clerk_user_id = req.params.clerk_user_id;
     const memoryId = req.params.memoryId;
     
     try{
-        const moments = await MomentModel.getMomentsByMemoryId(memoryId);        
+        const moments = await MomentModel.getMomentsByMemoryId(clerk_user_id,memoryId);        
         res.status(200).json(moments);
     } catch(err){        
         res.status(500).json({ error: err.message });

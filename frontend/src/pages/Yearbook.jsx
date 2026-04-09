@@ -7,8 +7,8 @@ import TemplateTimeline from '../templates/TemplateTimeline'
 import TemplateNeonBoard from '../templates/TemplateNeonBoard'
 import TemplatePostcard from '../templates/TemplatePostcard'
 import TemplateFilmstrip from '../templates/TemplateFilmstrip'
-import { fetchMemories } from '../services/api/memoryApi'
-import { fetchMoments } from '../services/api/momentApi'
+import { fetchMemoriesWithMoments } from '../services/api/memoryApi'
+import { useAuth } from '@clerk/react'
 
 const templateComponents = [
   TemplateClassic,
@@ -19,7 +19,8 @@ const templateComponents = [
   TemplateFilmstrip
 ]
 
-const userId = 1234
+
+// const userId = 1234
 
 const formatEntryMonth = (value) => {
   if (!value) {
@@ -53,14 +54,14 @@ const dedupeByKey = (items, getKey) => {
   })
 }
 
-const normalizeMemoryEntry = (memory, moments) => ({
+const normalizeMemoryEntry = (memory) => ({
   id: memory.memory_id,
   title: memory.title,
   month: formatEntryMonth(memory.date),
   imageFile: memory.cover_img_url,
   desc: memory.description,
   location: memory.location,
-  moments: moments.map((moment) => ({
+  moments: memory.moments.map((moment) => ({
     id: moment.moment_id,
     title: moment.title,
     month: formatEntryMonth(moment.date || memory.date),
@@ -69,7 +70,10 @@ const normalizeMemoryEntry = (memory, moments) => ({
   }))
 })
 
+
+
 const Yearbook = () => {
+  const {userId, getToken} = useAuth()
   const { year } = useParams()
   const [entries, setEntries] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -87,37 +91,44 @@ const Yearbook = () => {
     setError('')
 
     try {
-      const memoriesResponse = await fetchMemories(userId, year)
+      // Fetch all memories with moments in a single query (no N+1 problem)
+      const memoriesResponse = await fetchMemoriesWithMoments(userId, year, getToken)
       const memories = Array.isArray(memoriesResponse) ? memoriesResponse : []
       const uniqueMemories = dedupeByKey(memories, (memory) => String(memory.memory_id))
       const usedMomentKeys = new Set()
 
-      const memoriesWithMoments = await Promise.all(
-        uniqueMemories.map(async (memory) => {
-          const momentsResponse = await fetchMoments(memory.memory_id)
-          const moments = Array.isArray(momentsResponse) ? momentsResponse : []
-          const uniqueMoments = dedupeByKey(moments, (moment) => {
-            if (moment.moment_id !== undefined && moment.moment_id !== null) {
-              return `id:${moment.moment_id}`
-            }
+      // Transform each memory entry, deduplicate moments
+      const memoriesWithMoments = uniqueMemories.map((memory) => {
+        const uniqueMoments = dedupeByKey(memory.moments || [], (moment) => {
+          if (moment.moment_id !== undefined && moment.moment_id !== null) {
+            return `id:${moment.moment_id}`
+          }
 
-            return `fallback:${memory.memory_id}:${moment.title || ''}:${moment.date || ''}:${moment.img_url || ''}`
-          }).filter((moment) => {
-            const momentKey = moment.moment_id !== undefined && moment.moment_id !== null
-              ? `id:${moment.moment_id}`
-              : `fallback:${memory.memory_id}:${moment.title || ''}:${moment.date || ''}:${moment.img_url || ''}`
+          return `fallback:${memory.memory_id}:${moment.title || ''}:${moment.date || ''}:${moment.img_url || ''}`
+        }).filter((moment) => {
+          const momentKey = moment.moment_id !== undefined && moment.moment_id !== null
+            ? `id:${moment.moment_id}`
+            : `fallback:${memory.memory_id}:${moment.title || ''}:${moment.date || ''}:${moment.img_url || ''}`
 
-            if (usedMomentKeys.has(momentKey)) {
-              return false
-            }
+          if (usedMomentKeys.has(momentKey)) {
+            return false
+          }
 
-            usedMomentKeys.add(momentKey)
-            return true
-          })
-
-          return normalizeMemoryEntry(memory, uniqueMoments)
+          usedMomentKeys.add(momentKey)
+          return true
         })
-      )
+
+        return {
+          ...normalizeMemoryEntry(memory),
+          moments: uniqueMoments.map((moment) => ({
+            id: moment.moment_id,
+            title: moment.title,
+            month: formatEntryMonth(moment.date || memory.date),
+            imageFile: moment.img_url,
+            desc: moment.description
+          }))
+        }
+      })
 
       setEntries(memoriesWithMoments)
     } catch (fetchError) {
@@ -127,7 +138,7 @@ const Yearbook = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [year])
+  }, [year, userId, getToken])
 
   useEffect(() => {
     let isActive = true

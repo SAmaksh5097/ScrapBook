@@ -4,21 +4,30 @@ import AddMemoryForm from '../components/AddMemoryForm'
 import { Plus } from 'lucide-react'
 import { motion as Motion } from 'motion/react'
 import { fetchYears } from '../services/api/memoryApi'
+import { useAuth } from '@clerk/react'
 const Dashboard = () => {
-  const[years,setYears] = useState([]);
+  const [years, setYears] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true)
 
-  const userId = 1234; // in future, get this from auth context 
+  const { isLoaded, userId, getToken } = useAuth()
 
   const fetchYearsData = useCallback(async () => {
-    return fetchYears(userId)
-  }, [userId]);
+    if (!userId) {
+      return []
+    }
+
+    return fetchYears(userId, getToken)
+  }, [userId, getToken])
 
   useEffect(() => {
     let isActive = true
 
     const loadYears = async () => {
+      if (!isLoaded) {
+        return
+      }
+
       setIsLoading(true)
       try {
         const data = await fetchYearsData()
@@ -39,7 +48,7 @@ const Dashboard = () => {
     return () => {
       isActive = false
     }
-  }, [fetchYearsData]);
+  }, [fetchYearsData, isLoaded])
 
   const handleAddMemory = async () => {
     setIsLoading(true)
@@ -55,6 +64,7 @@ const Dashboard = () => {
   }
 
   return (
+    
     <Motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}

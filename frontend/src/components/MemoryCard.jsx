@@ -1,11 +1,33 @@
 import { PencilIcon, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
+import { useAuth } from '@clerk/react'
+import { deleteMemory } from '../services/api/memoryApi'
 const MemoryCard = ({ title, imageUrl, cardIndex, date, memoryId, onDelete }) => {
   const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
   const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
 
   const year = new Date(date).getFullYear();
+
+  const { getToken } = useAuth();
+
+  const handleDelete = async ()=>{
+    if(!window.confirm('Are you sure you want to delete this memory and all associated moments? This action cannot be undone.')){
+      return;
+    }
+    try{
+      const token = await getToken();
+      await deleteMemory(memoryId, token)
+      // Notify parent component to refetch list
+      if(onDelete){
+        onDelete(memoryId)
+      }
+    } catch(err){
+      console.error('Error deleting memory:', err)
+      alert('Failed to delete memory. Please try again.')
+    }
+  }
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 10 }}
@@ -37,7 +59,7 @@ const MemoryCard = ({ title, imageUrl, cardIndex, date, memoryId, onDelete }) =>
         <div className='mt-auto flex justify-end px-1 gap-4 text-zinc-700 transition duration-300 group-hover:translate-x-1 group-hover:text-black'>
             <button
               type='button'
-              onClick={() => onDelete?.(memoryId)}
+              onClick={handleDelete}
               className='cursor-pointer hover:text-red-600'
               aria-label='Delete memory'
             >

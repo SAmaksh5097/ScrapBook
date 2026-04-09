@@ -1,17 +1,24 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { motion } from 'motion/react'
+import { motion as Motion } from 'motion/react'
 import { addMoment } from '../services/api/momentApi'
-
+import { useAuth } from '@clerk/react'
 const AddMomentForm = ({onSubmit,onCancel }) => {
   const [title, setTitle] = useState('')
   const [day, setDay] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [desc, setDesc] = useState('')
 
+  const { userId, getToken } = useAuth()
+
   const { memoryId } = useParams();
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (!userId || !memoryId) {
+      console.error('Missing user or memory context for adding moment.')
+      return
+    }
 
 
     const trimmedImageUrl = imageUrl.trim()
@@ -21,7 +28,8 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
     }
 
     try{
-      await addMoment(memoryId, title, day, trimmedImageUrl, desc)
+      const token = await getToken();
+      await addMoment(token, userId, memoryId, title, day, trimmedImageUrl, desc)
 
       if (onSubmit) {
         await onSubmit()
@@ -42,7 +50,7 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
   }
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.18, ease: 'easeOut' }}
@@ -136,7 +144,7 @@ const AddMomentForm = ({onSubmit,onCancel }) => {
           </button>
         </div>
       </form>
-    </motion.div>
+    </Motion.div>
   )
 }
 

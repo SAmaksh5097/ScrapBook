@@ -1,9 +1,13 @@
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // used to fetch years for which user has memories, used in Dashboard.jsx
-export const fetchYears = (async (userId) => { 
+export const fetchYears = async (clerk_user_id, getToken) => {
     try{
-      const response = await fetch(`http://localhost:5000/api/memories/years/${userId}`,{
+      
+      const token = await getToken();
+      const response = await fetch(`${VITE_API_BASE_URL}/memories/years/${clerk_user_id}`,{
         method: 'GET',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       })
@@ -19,12 +23,19 @@ export const fetchYears = (async (userId) => {
       console.error('Error fetching years:', err)
       return []
     }  
-});
+}
 
 // used to fetch memories of a user for a specific year, used in Yearpage.jsx
-export const fetchMemories = async (userId, year)=>{
+export const fetchMemories = async (clerk_user_id, year, getToken) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/memories/${userId}/${year}`)
+        const token = await getToken();
+        const response = await fetch(`${VITE_API_BASE_URL}/memories/${clerk_user_id}/${year}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
       if (!response.ok) {
         throw new Error('Failed to fetch memories')
@@ -37,12 +48,38 @@ export const fetchMemories = async (userId, year)=>{
     }
 }
 
+// used to fetch memories with moments in single query (no N+1 problem), used in Yearbook.jsx
+export const fetchMemoriesWithMoments = async (clerk_user_id, year, getToken) => {
+    try {
+        const token = await getToken();
+        const response = await fetch(`${VITE_API_BASE_URL}/memories/with-moments/${clerk_user_id}/${year}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch memories with moments')
+      }
+
+      const data = await response.json()
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch memories with moments:', error)
+      return [];
+    }
+}
+
 // used to fetch details of a specific memory, used in MemoryPage.jsx
-export const fetchMemoryDetails = async (memoryId) => {
+export const fetchMemoryDetails = async (memoryId, getToken) => {
     try{
-        const response = await fetch(`http://localhost:5000/api/memories/${memoryId}`, {
+      const token = await getToken();
+        const response = await fetch(`${VITE_API_BASE_URL}/memories/${memoryId}`, {
               method: 'GET',
               headers: {
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
               }
         })
@@ -54,15 +91,16 @@ export const fetchMemoryDetails = async (memoryId) => {
 }
 
 // used to add a new memory, used in AddMemoryForm.jsx
-export const addMemory = async (user_id, title, date, cover_img_url, location, description)=>{
+export const addMemory = async (token, clerk_user_id, title, date, cover_img_url, location, description)=>{
     try{
-      const response = await fetch(`http://localhost:5000/api/memories`, {
+      const response = await fetch(`${VITE_API_BASE_URL}/memories`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          user_id: user_id,
+          clerk_user_id: clerk_user_id,
           title: title.trim(),
           date: date,
           cover_img_url: cover_img_url.trim(),
@@ -80,12 +118,13 @@ export const addMemory = async (user_id, title, date, cover_img_url, location, d
 }
 
 // used to delete a memory and its related moments, used in Yearpage.jsx
-export const deleteMemory = async (memoryId) => {
+export const deleteMemory = async (memoryId, token) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/memories/${memoryId}`, {
+    const response = await fetch(`${VITE_API_BASE_URL}/memories/${memoryId}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     })
 

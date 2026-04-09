@@ -2,11 +2,13 @@ import { Trash } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { deleteMoment } from '../services/api/momentApi'
+import { useAuth } from '@clerk/react'
 const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSuccess }) => {
     const tiltStyles = ['rotate-[-1.5deg]', 'rotate-[1deg]', 'rotate-[-0.75deg]', 'rotate-[1.5deg]']
   const tiltClass = tiltStyles[cardIndex % tiltStyles.length]
 
-  
+  const { getToken } = useAuth()
+
   const memory_id = useParams().memoryId;
   
   async function handleDelete(){
@@ -14,13 +16,15 @@ const Momentcard = ({ title, img_url, date, description, cardIndex, onDeleteSucc
       return;
     }
     try{
-      await deleteMoment(cardIndex, memory_id)
+      const token = await getToken();
+      await deleteMoment(cardIndex, memory_id, token)
 
       if (onDeleteSuccess) {
-        await onDeleteSuccess()
+        onDeleteSuccess()
       }
     } catch(err){
       console.error('Error deleting moment:', err)
+      alert('Failed to delete moment. Please try again.')
     }
   }
 

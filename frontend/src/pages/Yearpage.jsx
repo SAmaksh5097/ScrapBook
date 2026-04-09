@@ -1,20 +1,25 @@
 import { useState, useEffect, useCallback } from 'react'
 import MemoryCard from '../components/MemoryCard'
 import AddMemoryForm from '../components/AddMemoryForm'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { motion as Motion } from 'motion/react'
-import { fetchMemories, deleteMemory } from '../services/api/memoryApi'
-
+import { fetchMemories } from '../services/api/memoryApi'
+import { useAuth } from '@clerk/react'
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [memories, setMemories] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const { year } = useParams()
-  const userId = 1234; // in future, get this from auth context
+  const isValidYear = /^\d{4}$/.test(year);
+  if (!isValidYear) {
+    return <Navigate to="/404" />
+  }
+  const { userId, getToken } = useAuth()
+  // const userId = 1234; // in future, get this from auth context
 
   const fetchMemoriesData = useCallback(async () => {
-    return fetchMemories(userId, year)
-  }, [userId, year])
+    return fetchMemories(userId, year, getToken)
+  }, [userId, year, getToken])
 
   useEffect(() => {
       let isActive = true
@@ -56,18 +61,12 @@ const Yearpage = () => {
   }
 
   const handleDeleteMemory = async (memoryId) => {
-    const isConfirmed = window.confirm('Delete this memory and all associated moments?')
-
-    if (!isConfirmed) {
-      return
-    }
-
+    // Confirmation already done in MemoryCard, just refetch the list
     try {
-      await deleteMemory(memoryId)
       const data = await fetchMemoriesData()
       setMemories(data || [])
     } catch (error) {
-      console.error('Failed to delete memory:', error)
+      console.error('Failed to refetch memories after deletion:', error)
     }
   }
 
@@ -87,7 +86,7 @@ const Yearpage = () => {
           >
             Add memory
           </button>
-          <Link to={`/${year}/yearbook`}>
+          <Link to={`/dashboard/${year}/yearbook`}>
             <button className='border bg-white text-black p-2 rounded-sm cursor-pointer hover:bg-gray-300'>
               View Yearbook
             </button>
@@ -112,7 +111,7 @@ const Yearpage = () => {
           ? Array.from({ length: 8 }).map((_, index) => (
             <div
               key={`memory-skeleton-${index}`}
-              className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3 border border-zinc-300 bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
+              className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3 bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
             >
               <div className='h-40 w-full border border-zinc-700 bg-zinc-800'></div>
               <div className='space-y-2 px-1 pt-1'>

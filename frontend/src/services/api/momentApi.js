@@ -1,10 +1,13 @@
 // used to fetch moments for a specific memory, used in MemoryPage.jsx
-export const fetchMoments = async (memoryId)=>{
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const fetchMoments = async (clerk_user_id,memoryId, getToken)=>{
     try {
-        const response = await fetch(`http://localhost:5000/api/moments/${memoryId}`, {
+      const token = await getToken();
+        const response = await fetch(`${VITE_API_BASE_URL}/moments/${clerk_user_id}/${memoryId}`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           }
         })
 
@@ -16,11 +19,12 @@ export const fetchMoments = async (memoryId)=>{
 }
 
 // used to delete a moment, used in MomentCard.jsx
-export const deleteMoment = async(momentId, memoryId)=>{
+export const deleteMoment = async(momentId, memoryId, token)=>{
     try{
-      const response = await fetch(`http://localhost:5000/api/moments`,{
+      const response = await fetch(`${VITE_API_BASE_URL}/moments`,{
         method: 'DELETE',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({momentId: momentId, memoryId: memoryId})
@@ -36,17 +40,19 @@ export const deleteMoment = async(momentId, memoryId)=>{
     }
 }
 
-export const addMoment = async (memoryId, title, day, img_url, description) =>{
+export const addMoment = async (token, clerk_user_id, memoryId, title, day, img_url, description) =>{
   try{
-    const response = await fetch(`http://localhost:5000/api/moments`,{
+    const response = await fetch(`${VITE_API_BASE_URL}/moments`,{
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
+        clerk_user_id: clerk_user_id,
         memory_id: memoryId,
         title: title.trim(),
-        day,
+        day: day,
         img_url: img_url.trim(),
         description: description.trim()
       })
@@ -55,7 +61,10 @@ export const addMoment = async (memoryId, title, day, img_url, description) =>{
     if (!response.ok) {
       throw new Error('Failed to add moment')
     }
+
+    return await response.json()
   } catch(err){
     console.error('Error adding moment:', err)
+    throw err
   }
 }

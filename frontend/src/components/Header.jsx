@@ -2,6 +2,7 @@ import React from 'react'
 import Icon from '../assets/favicon.png'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
+import UserProfile from './UserProfile'
 const Header = () => {
   return (
     <motion.div
@@ -18,11 +19,11 @@ const Header = () => {
             </div>
           </Link>
           <div className='flex gap-2 md:gap-3'>
-            <button className='rounded-full border border-white px-4 py-1.5 text-sm transition hover:bg-white hover:text-black md:px-5 md:text-base'>Login</button>
-            <button className='rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black transition hover:bg-black hover:text-white hover:shadow-[0_0_0_1px_white_inset] md:px-5 md:text-base'>Sign Up</button>
+            <UserProfile/>
+              {/* <button className='rounded-full border border-white px-4 py-1.5 text-sm transition hover:bg-white hover:text-black md:px-5 md:text-base'>Login</button>
+              <button className='rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black transition hover:bg-black hover:text-white hover:shadow-[0_0_0_1px_white_inset] md:px-5 md:text-base'>Sign Up</button> */}
           </div>
         </div>
-      
     </motion.div>
   )
 }

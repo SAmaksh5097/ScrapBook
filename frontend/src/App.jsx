@@ -27,7 +27,7 @@ const App = () => {
               <Route path='/dashboard' element={<Dashboard/>}/>
               <Route path='/dashboard/:year' element={<Yearpage/>}/>
               <Route path='/dashboard/:year/:memoryId' element={<Memorypage/>}/>
-              <Route path='/yearbook' element={<Yearbook/>}/>
+              <Route path='/:year/yearbook' element={<Yearbook/>}/>
             </Routes>
           </motion.div>
         </AnimatePresence>

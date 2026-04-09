@@ -1,102 +1,14 @@
-import React from 'react'
-import { motion } from 'motion/react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { motion as Motion } from 'motion/react'
+import { useParams } from 'react-router-dom'
 import TemplateClassic from '../templates/TemplateClassic'
 import TemplatePolaroid from '../templates/TemplatePolaroid'
 import TemplateTimeline from '../templates/TemplateTimeline'
 import TemplateNeonBoard from '../templates/TemplateNeonBoard'
 import TemplatePostcard from '../templates/TemplatePostcard'
 import TemplateFilmstrip from '../templates/TemplateFilmstrip'
-
-const dummyYearbookData = [
-  {
-    id: 1,
-    title: 'First Hackathon Win',
-    month: '2024-01',
-    imageFile: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80',
-    desc: 'Built a productivity app overnight and won best UI concept.',
-    location: 'Campus Lab',
-    moments: [
-      {
-        title: 'Final Pitch',
-        month: '2024-01',
-        imageFile: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Team huddle minutes before final project presentation.'
-      },
-      {
-        title: 'Winner Announcement',
-        month: '2024-01',
-        imageFile: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Celebration photo right after winners were announced.'
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Rainy Evening Ride',
-    month: '2024-03',
-    imageFile: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80',
-    desc: 'Unexpected rain, music on, and a very peaceful bike ride through the city.',
-    location: 'Downtown',
-    moments: [
-      {
-        title: 'City Lights',
-        month: '2024-03',
-        imageFile: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Wet roads reflecting city lights during the ride back home.'
-      },
-      {
-        title: 'Quiet Streets',
-        month: '2024-03',
-        imageFile: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1200&q=80',
-        desc: 'A calm route home with almost no traffic.'
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: 'Family Reunion Lunch',
-    month: '2024-06',
-    imageFile: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80',
-    desc: 'Stories, laughter, and food that tasted like childhood memories.',
-    location: 'Grandma\'s House',
-    moments: [
-      {
-        title: 'Before Lunch',
-        month: '2024-06',
-        imageFile: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Traditional family dishes laid out before the feast started.'
-      },
-      {
-        title: 'After Stories',
-        month: '2024-06',
-        imageFile: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Group selfie full of smiles after hearing old stories.'
-      }
-    ]
-  },
-  {
-    id: 4,
-    title: 'Project Launch Day',
-    month: '2024-09',
-    imageFile: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80',
-    desc: 'Shipped the first full version after weeks of debugging and design tweaks.',
-    location: 'Remote',
-    moments: [
-      {
-        title: 'Deploy Time',
-        month: '2024-09',
-        imageFile: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Monitoring logs and fixing last-minute issues with the team.'
-      },
-      {
-        title: 'Post Launch',
-        month: '2024-09',
-        imageFile: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80',
-        desc: 'Team recap after launch with notes for the next sprint.'
-      }
-    ]
-  }
-]
+import { fetchMemories } from '../services/api/memoryApi'
+import { fetchMoments } from '../services/api/momentApi'
 
 const templateComponents = [
   TemplateClassic,
@@ -107,19 +19,141 @@ const templateComponents = [
   TemplateFilmstrip
 ]
 
-const templatePreviewEntries = templateComponents.map((_, templateIndex) => {
-  const sourceEntry = dummyYearbookData[templateIndex % dummyYearbookData.length]
+const userId = 1234
 
-  return {
-    ...sourceEntry,
-    id: `template-preview-${templateIndex + 1}`,
-    templateIndex
+const formatEntryMonth = (value) => {
+  if (!value) {
+    return 'Unknown date'
   }
+
+  const parsedDate = new Date(value)
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return String(value)
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    year: 'numeric'
+  }).format(parsedDate)
+}
+
+const dedupeByKey = (items, getKey) => {
+  const seenKeys = new Set()
+
+  return items.filter((item) => {
+    const key = getKey(item)
+
+    if (seenKeys.has(key)) {
+      return false
+    }
+
+    seenKeys.add(key)
+    return true
+  })
+}
+
+const normalizeMemoryEntry = (memory, moments) => ({
+  id: memory.memory_id,
+  title: memory.title,
+  month: formatEntryMonth(memory.date),
+  imageFile: memory.cover_img_url,
+  desc: memory.description,
+  location: memory.location,
+  moments: moments.map((moment) => ({
+    id: moment.moment_id,
+    title: moment.title,
+    month: formatEntryMonth(moment.date || memory.date),
+    imageFile: moment.img_url,
+    desc: moment.description
+  }))
 })
 
 const Yearbook = () => {
+  const { year } = useParams()
+  const [entries, setEntries] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const loadYearbook = useCallback(async () => {
+    if (!year) {
+      setEntries([])
+      setError('Missing year in the route.')
+      setIsLoading(false)
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const memoriesResponse = await fetchMemories(userId, year)
+      const memories = Array.isArray(memoriesResponse) ? memoriesResponse : []
+      const uniqueMemories = dedupeByKey(memories, (memory) => String(memory.memory_id))
+      const usedMomentKeys = new Set()
+
+      const memoriesWithMoments = await Promise.all(
+        uniqueMemories.map(async (memory) => {
+          const momentsResponse = await fetchMoments(memory.memory_id)
+          const moments = Array.isArray(momentsResponse) ? momentsResponse : []
+          const uniqueMoments = dedupeByKey(moments, (moment) => {
+            if (moment.moment_id !== undefined && moment.moment_id !== null) {
+              return `id:${moment.moment_id}`
+            }
+
+            return `fallback:${memory.memory_id}:${moment.title || ''}:${moment.date || ''}:${moment.img_url || ''}`
+          }).filter((moment) => {
+            const momentKey = moment.moment_id !== undefined && moment.moment_id !== null
+              ? `id:${moment.moment_id}`
+              : `fallback:${memory.memory_id}:${moment.title || ''}:${moment.date || ''}:${moment.img_url || ''}`
+
+            if (usedMomentKeys.has(momentKey)) {
+              return false
+            }
+
+            usedMomentKeys.add(momentKey)
+            return true
+          })
+
+          return normalizeMemoryEntry(memory, uniqueMoments)
+        })
+      )
+
+      setEntries(memoriesWithMoments)
+    } catch (fetchError) {
+      console.error('Failed to load yearbook data:', fetchError)
+      setEntries([])
+      setError('Unable to load the yearbook right now.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [year])
+
+  useEffect(() => {
+    let isActive = true
+
+    const run = async () => {
+      if (!isActive) {
+        return
+      }
+
+      await loadYearbook()
+    }
+
+    run()
+
+    return () => {
+      isActive = false
+    }
+  }, [loadYearbook])
+
+  const templateEntries = entries.map((entry, index) => ({
+    ...entry,
+    templateIndex: index % templateComponents.length
+  }))
+
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -131,57 +165,92 @@ const Yearbook = () => {
 
       <div className='relative mx-auto flex w-full max-w-7xl flex-col gap-8'>
         {/* start of yearbook */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           viewport={{ once: true }}
-          className='rounded-3xl border border-zinc-300/70 bg-white/70 px-6 py-8 shadow-[0_10px_35px_rgba(0,0,0,0.08)] backdrop-blur-sm'
+          className='px-6 py-8 shadow-[0_10px_35px_rgba(0,0,0,0.08)]'
         >
-          <p className='text-center text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500'>ScrapBook</p>
-          <h1 className='mt-2 text-center text-4xl font-bold text-zinc-800 sm:text-5xl'>Year 2024</h1>
+          <h1 className='mt-2 text-center text-4xl font-bold text-white sm:text-5xl'>Year {year}</h1>
           <p className='mx-auto mt-3 max-w-2xl text-center text-sm text-zinc-600 sm:text-base'>
-            A visual trail of memories and moments, showcased in different template styles.
+            A visual trail of memories and moments
           </p>
-        </motion.div>
+        </Motion.div>
 
         {/* yearbook content */}
         <div className='relative flex w-full flex-col gap-8 py-2'>
           <div className='pointer-events-none absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 bg-zinc-300/80 md:block' />
-          {templatePreviewEntries.map((entry, index) => {
+
+          {isLoading && (
+            <Motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className='rounded-2xl border border-zinc-300/70 bg-white/70 px-5 py-8 text-center text-sm text-zinc-600 shadow-[0_6px_18px_rgba(0,0,0,0.08)] backdrop-blur-sm'
+            >
+              Loading memories and moments...
+            </Motion.div>
+          )}
+
+          {!isLoading && error && (
+            <Motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className='rounded-2xl border border-rose-300/70 bg-rose-50/90 px-5 py-6 text-center text-sm text-rose-800 shadow-[0_6px_18px_rgba(0,0,0,0.08)]'
+            >
+              {error}
+            </Motion.div>
+          )}
+
+          {!isLoading && !error && templateEntries.length === 0 && (
+            <Motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className='rounded-2xl border border-zinc-300/70 bg-white/70 px-5 py-8 text-center text-sm text-zinc-600 shadow-[0_6px_18px_rgba(0,0,0,0.08)] backdrop-blur-sm'
+            >
+              No memories found for {year}.
+            </Motion.div>
+          )}
+
+          {!isLoading && !error && templateEntries.map((entry, index) => {
             const SelectedTemplate = templateComponents[entry.templateIndex]
             const alignmentClass = index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'
 
             return (
-              <motion.div
+              <Motion.div
                 key={entry.id}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -4, scale: 1.005 }}
                 transition={{ duration: 0.22, delay: (index % 6) * 0.03 }}
                 viewport={{ once: true }}
                 className={`relative flex w-full justify-center ${alignmentClass}`}
               >
                 <div className='absolute left-1/2 top-7 hidden h-4 w-4 -translate-x-1/2 rounded-full border border-zinc-300 bg-white shadow md:block' />
                 <SelectedTemplate entry={entry} />
-              </motion.div>
+              </Motion.div>
             )
           })}
         </div>
 
         {/* the end of yearbook */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
+          whileHover={{ y: -2 }}
           transition={{ duration: 0.22 }}
           viewport={{ once: true }}
           className='mb-2 rounded-2xl border border-zinc-300/70 bg-white/70 px-5 py-6 text-center shadow-[0_6px_18px_rgba(0,0,0,0.08)] backdrop-blur-sm'
         >
           <h1 className='text-3xl font-bold text-zinc-800'>That&apos;s a wrap!</h1>
-          <p className='mt-2 text-sm text-zinc-600'>More stories coming in the next chapter.</p>
-        </motion.div>
+          <p className='mt-2 text-sm text-zinc-600'>More stories coming in the next year.</p>
+        </Motion.div>
 
       </div>
-    </motion.div>
+    </Motion.div>
   )
 }
 

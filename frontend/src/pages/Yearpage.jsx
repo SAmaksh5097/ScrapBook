@@ -87,7 +87,7 @@ const Yearpage = () => {
           >
             Add memory
           </button>
-          <Link to={'/yearbook'}>
+          <Link to={`/${year}/yearbook`}>
             <button className='border bg-white text-black p-2 rounded-sm cursor-pointer hover:bg-gray-300'>
               View Yearbook
             </button>

@@ -77,7 +77,7 @@ const Memorypage = () => {
                   <>
                     <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>
                     <p className='text-sm text-white/70 '>{memoryDetails ? memoryDetails.description : ''}</p>
-                    <p className='text-sm text-white/90'>{memoryDetails ? new Date(memoryDetails.date).toLocaleDateString("en-US",{day: 'numeric', month: 'long', year: 'numeric'}) : ''}</p>
+                    <p className='text-sm text-white/90'>{memoryDetails ? new Date(memoryDetails.date).toLocaleDateString("en-US",{month: 'long', year: 'numeric'}) : ''}</p>
                   </>
                 )}
             </div>

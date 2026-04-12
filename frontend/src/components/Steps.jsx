@@ -1,17 +1,9 @@
-import React, { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 
 const Steps = () => {
-    const points = ["Upload","Auto Organize","Share"];
-    const [activeStep, setActiveStep] = useState(0);
+    const points = ["Upload","Define","Relive"];
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveStep((currentStep) => (currentStep + 1) % points.length);
-        }, 1200);
-
-        return () => clearInterval(interval);
-    }, [points.length]);
+    
 
   return (
     <motion.div
@@ -26,7 +18,7 @@ const Steps = () => {
           <div className='grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6'>
             {
                 points.map((point,index)=>{
-                    return <Card title={point} isActive={activeStep === index} key={index}/>
+                    return <Card title={point} key={index}/>
                 }
                 )
             }
@@ -36,12 +28,11 @@ const Steps = () => {
   )
 }
 
-const Card = ({title, isActive})=>{
+const Card = ({title})=>{
     return(
   <motion.div
     whileHover={{ y: -3 }}
-    transition={{ duration: 0.15 }}
-    className={`group rounded-2xl border text-center bg-black p-6 text-white transition duration-400 hover:-translate-y-1 cursor-auto md:p-8 ${isActive ? 'border-white shadow-[0_0_24px_rgba(255,255,255,0.35)] scale-[1.02]' : 'border-white/35'}`}
+    className={`group rounded-2xl border text-center bg-black p-6 text-white transition duration-400 hover:-translate-y-1 cursor-auto md:p-8}`}
   >
             <h1 className='text-xl font-semibold tracking-wide md:text-2xl'>{title}</h1>
 

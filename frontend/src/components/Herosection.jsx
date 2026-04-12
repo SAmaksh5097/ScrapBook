@@ -11,7 +11,7 @@ const Herosection = () => {
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className='text-[2.8rem] leading-[0.95] font-black tracking-tight md:text-[6rem] lg:text-[8rem]'
           >
-            YOUR YEAR,
+            YOUR MEMORIES,
           </motion.h1>
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
@@ -27,7 +27,7 @@ const Herosection = () => {
             transition={{ duration: 0.25, delay: 0.1, ease: 'easeOut' }}
             className='mt-8 w-full max-w-2xl border-l-2 border-white/70 pl-4 md:mt-10 md:pl-6'
           >
-            <p className='text-lg leading-relaxed md:text-2xl'>Easy to build, effortless to share, and made to relive every special moment with your loved ones.</p>
+            <p className='text-lg leading-relaxed md:text-2xl'>Organizing your memories made simple.</p>
             <div>
               <Link to={'/dashboard'}>
               <motion.button

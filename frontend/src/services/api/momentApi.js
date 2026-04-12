@@ -1,9 +1,13 @@
 // used to fetch moments for a specific memory, used in MemoryPage.jsx
 const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-export const fetchMoments = async (clerk_user_id,memoryId, getToken)=>{
+export const fetchMoments = async (clerk_user_id, memoryId, getToken, limit = 12, offset = 0)=>{
     try {
       const token = await getToken();
-        const response = await fetch(`${VITE_API_BASE_URL}/moments/${clerk_user_id}/${memoryId}`, {
+      const url = new URL(`${VITE_API_BASE_URL}/moments/${clerk_user_id}/${memoryId}`);
+      url.searchParams.append('limit', limit);
+      url.searchParams.append('offset', offset);
+      
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -15,6 +19,7 @@ export const fetchMoments = async (clerk_user_id,memoryId, getToken)=>{
         return data;
       } catch (err) {
         console.error('Error fetching moments:', err)
+        return { moments: [], hasMore: false };
       }
 }
 

@@ -18,14 +18,17 @@ export const addMemory = async (req, res) => {
 export const getUserMemories = async (req,res)=>{
   const clerk_user_id = req.params.clerk_user_id;
   const year = req.params.year;
+  const limit = parseInt(req.query.limit) || 12;
+  const offset = parseInt(req.query.offset) || 0;
   
 
   try{
-    const memories = await MemoryModel.getyearMemoriesByUserId(clerk_user_id, year);
+    const memories = await MemoryModel.getyearMemoriesByUserId(clerk_user_id, year, limit, offset);
     if(memories.length === 0){
-      return res.status(404).json({ message: "No memories found for this user and year." });
+      return res.status(200).json({ memories: [], hasMore: false });
     }
-    res.status(200).json(memories);
+    const hasMore = memories.length === limit;
+    res.status(200).json({ memories, hasMore });
   } catch (err){
     res.status(500).json({ error: err.message });
   }
@@ -104,17 +107,26 @@ export const getDistinctYears = async (req,res)=>{
 
 export const deleteMemory = async (req, res) => {
   const memoryId = parseInt(req.params.memoryId, 10);
+  const {userId} = req.auth;
 
   if (Number.isNaN(memoryId)) {
     return res.status(400).json({ error: 'Invalid memory id.' });
   }
 
   try {
+    const memory = await MemoryModel.getMemoryById(memoryId);
+    if(!memory) {
+      return res.status(404).json({ error: 'Memory not found.' });
+    }
+    if (memory.clerk_user_id !== userId) {
+      return res.status(403).json({ error: 'Unauthorized to delete this memory.' });
+    }
     const deletedMemory = await MemoryModel.deleteMemoryWithMoments(memoryId);
 
     if (!deletedMemory) {
       return res.status(404).json({ message: 'Memory not found.' });
     }
+    
 
     return res.status(200).json({
       message: 'Memory and related moments deleted successfully!',

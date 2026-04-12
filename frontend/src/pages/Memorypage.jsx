@@ -6,9 +6,15 @@ import {useParams} from 'react-router-dom'
 import { motion as Motion } from 'motion/react'
 import { fetchMemoryDetails } from '../services/api/memoryApi'
 import { fetchMoments } from '../services/api/momentApi'
+import LoginRequest from '../components/LoginRequest'
 import { useAuth } from '@clerk/react'
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver'
+
 const Memorypage = () => {
     const [moments, setMoments] = useState([])
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const [momentOffset, setMomentOffset] = useState(0)
+    const [hasMomentMore, setHasMomentMore] = useState(true)
 
   const { isLoaded, userId, getToken } = useAuth()
 
@@ -16,6 +22,26 @@ const Memorypage = () => {
   const [isLoading, setIsLoading] = useState(true)
 
     const { memoryId } = useParams();
+
+  const loadMoreMoments = useCallback(async () => {
+    if (!hasMomentMore || isLoadingMore) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const data = await fetchMoments(userId, memoryId, getToken, 12, momentOffset + 12);
+      if (data?.moments) {
+        setMoments(prev => [...prev, ...data.moments]);
+        setMomentOffset(prev => prev + 12);
+        setHasMomentMore(data.hasMore);
+      }
+    } catch (error) {
+      console.error('Failed to fetch more moments:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [userId, memoryId, getToken, momentOffset, hasMomentMore, isLoadingMore]);
+
+  const observerRef = useIntersectionObserver(loadMoreMoments);
 
   const loadMemoryPageData = useCallback(async () => {
       if (!userId) {
@@ -26,13 +52,14 @@ const Memorypage = () => {
       }
 
       const [momentsData, detailsData] = await Promise.all([
-        fetchMoments(userId, memoryId, getToken),
+        fetchMoments(userId, memoryId, getToken, 12, 0),
         fetchMemoryDetails(memoryId, getToken)
       ])
 
       return {
-        momentsData: momentsData || [],
+        momentsData: momentsData?.moments || [],
         detailsData,
+        hasMore: momentsData?.hasMore ?? true,
       }
     }, [memoryId, userId, getToken])
 
@@ -44,9 +71,11 @@ const Memorypage = () => {
 
         setIsLoading(true)
         try {
-          const { momentsData, detailsData } = await loadMemoryPageData()
+          const { momentsData, detailsData, hasMore } = await loadMemoryPageData()
           setMoments(momentsData)
           setMemoryDetails(detailsData)
+          setMomentOffset(0)
+          setHasMomentMore(hasMore)
         } catch (err) {
           console.error('Error loading memory page data:', err)
         } finally {
@@ -64,8 +93,10 @@ const Memorypage = () => {
 
       setIsLoading(true)
       try {
-        const data = await fetchMoments(userId, memoryId, getToken)
-        setMoments(data || [])
+        const data = await fetchMoments(userId, memoryId, getToken, 12, 0)
+        setMoments(data?.moments || [])
+        setMomentOffset(0)
+        setHasMomentMore(data?.hasMore ?? true)
       } catch (err) {
         console.error('Error fetching moments:', err)
       } finally {
@@ -77,73 +108,94 @@ const Memorypage = () => {
     const [showAddForm, setShowAddForm] = useState(false)
 
   return (
-    <Motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'
-    >
-        <div className='flex justify-between border-b border-white/30 pb-5 mb-5 items-center'>
-            <div>
-                {isLoading ? (
-                  <div className='space-y-2 animate-pulse'>
-                    <div className='h-8 w-52 rounded bg-white/15'></div>
-                    <div className='h-4 w-72 rounded bg-white/10'></div>
-                    <div className='h-4 w-40 rounded bg-white/10'></div>
-                  </div>
-                ) : (
-                  <>
-                    <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>
-                    <p className='text-sm text-white/70 '>{memoryDetails ? memoryDetails.description : ''}</p>
-                    <p className='text-sm text-white/90'>{memoryDetails ? new Date(memoryDetails.date).toLocaleDateString("en-US",{month: 'long', year: 'numeric'}) : ''}</p>
-                  </>
-                )}
-            </div>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className='flex gap-2 border p-1 rounded-sm h-fit bg-white text-black cursor-pointer hover:bg-gray-300 items-center transition '
-            >
-                <Camera/>
-                <h1>Add Photo</h1>
-            </button>
-        </div>
-        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-          {isLoading
-            ? Array.from({ length: 8 }).map((_, index) => (
-              <div
-                key={`moment-skeleton-${index}`}
-                className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3  bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
-              >
-                <div className='h-40 w-full bg-zinc-800'></div>
-                <div className='space-y-2 px-1 pt-1'>
-                  <div className='h-4 w-2/3 rounded bg-zinc-700'></div>
-                  <div className='h-3 w-1/3 rounded bg-zinc-700'></div>
-                </div>
-                <div className='border-t border-zinc-700 pt-2 px-1'>
-                  <div className='h-3 w-full rounded bg-zinc-700'></div>
-                </div>
+    <>
+      {userId?(
+
+      <Motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        className='w-full bg-black text-white py-10 px-4 md:px-10 pb-20'
+      >
+          <div className='flex justify-between border-b border-white/30 pb-5 mb-5 items-center'>
+              <div>
+                  {isLoading ? (
+                    <div className='space-y-2 animate-pulse'>
+                      <div className='h-8 w-52 rounded bg-white/15'></div>
+                      <div className='h-4 w-72 rounded bg-white/10'></div>
+                      <div className='h-4 w-40 rounded bg-white/10'></div>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className='text-3xl'>{memoryDetails ? memoryDetails.title : 'Memory Details'}</h1>
+                      <p className='text-sm text-white/70 '>{memoryDetails ? memoryDetails.description : ''}</p>
+                      <p className='text-sm text-white/90'>{memoryDetails ? new Date(memoryDetails.date).toLocaleDateString("en-US",{month: 'long', year: 'numeric'}) : ''}</p>
+                    </>
+                  )}
               </div>
-            ))
-            : moments.map((moment) => (
-              <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={refreshMoments} />
-            ))}
-        </div> 
+              <button
+                onClick={() => setShowAddForm(true)}
+                className='flex gap-2 border p-1 rounded-sm h-fit bg-white text-black cursor-pointer hover:bg-gray-300 items-center transition '
+              >
+                  <Camera/>
+                  <h1>Add Photo</h1>
+              </button>
+          </div>
+          <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, index) => (
+                <div
+                  key={`moment-skeleton-${index}`}
+                  className='group relative mx-auto flex h-full w-full max-w-sm flex-col gap-3  bg-zinc-900/70 p-3 shadow-[0_8px_20px_rgba(0,0,0,0.3)] animate-pulse'
+                >
+                  <div className='h-40 w-full bg-zinc-800'></div>
+                  <div className='space-y-2 px-1 pt-1'>
+                    <div className='h-4 w-2/3 rounded bg-zinc-700'></div>
+                    <div className='h-3 w-1/3 rounded bg-zinc-700'></div>
+                  </div>
+                  <div className='border-t border-zinc-700 pt-2 px-1'>
+                    <div className='h-3 w-full rounded bg-zinc-700'></div>
+                  </div>
+                </div>
+              ))
+              : moments.map((moment) => (
+                <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={refreshMoments} />
+              ))}
+          </div> 
 
-        {showAddForm && (
-          <Motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'
-          >
-            <AddMomentForm onSubmit={refreshMoments} onCancel={() => setShowAddForm(false)} />
-          </Motion.div>
-        )}
+          {/* Intersection observer trigger for infinite scroll */}
+          {hasMomentMore && !isLoading && moments.length > 0 && (
+            <div ref={observerRef} className='mt-8 flex justify-center'>
+              {isLoadingMore && (
+                <div className='flex gap-2'>
+                  <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce'></div>
+                  <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce' style={{animationDelay: '0.1s'}}></div>
+                  <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce' style={{animationDelay: '0.2s'}}></div>
+                </div>
+              )}
+            </div>
+          )} 
+
+          {showAddForm && (
+            <Motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              className='fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm'
+            >
+              <AddMomentForm onSubmit={refreshMoments} onCancel={() => setShowAddForm(false)} />
+            </Motion.div>
+          )}
 
 
-      
-    </Motion.div>
+        
+      </Motion.div>
+      ):(
+        <LoginRequest/>
+      )}
+    
+    </>
   )
 }
 

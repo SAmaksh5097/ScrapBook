@@ -65,10 +65,13 @@ export const addMoment = async (req,res)=>{
 export const getMomentsByMemoryId = async (req,res)=>{
     const clerk_user_id = req.params.clerk_user_id;
     const memoryId = req.params.memoryId;
+    const limit = parseInt(req.query.limit) || 12;
+    const offset = parseInt(req.query.offset) || 0;
     
     try{
-        const moments = await MomentModel.getMomentsByMemoryId(clerk_user_id,memoryId);        
-        res.status(200).json(moments);
+        const moments = await MomentModel.getMomentsByMemoryId(clerk_user_id, memoryId, limit, offset);        
+        const hasMore = moments.length === limit;
+        res.status(200).json({ moments, hasMore });
     } catch(err){        
         res.status(500).json({ error: err.message });
     }

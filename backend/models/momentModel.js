@@ -20,13 +20,13 @@ class MomentModel{
     }
   }
 
-  static async getMomentsByMemoryId(clerk_user_id, memoryId){
+  static async getMomentsByMemoryId(clerk_user_id, memoryId, limit = 12, offset = 0){
     const sql = `
-      SELECT * FROM moment_data WHERE clerk_user_id = $1 AND memory_id=$2 ORDER BY date;`
+      SELECT * FROM moment_data WHERE clerk_user_id = $1 AND memory_id=$2 ORDER BY date DESC LIMIT $3 OFFSET $4;`
       ;
 
       try{
-        const result = await query(sql, [clerk_user_id, memoryId]);
+        const result = await query(sql, [clerk_user_id, memoryId, limit, offset]);
         return result.rows;
       } catch (err){
         throw new Error('Error fetching moments: ' + err.message);

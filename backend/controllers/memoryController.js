@@ -18,14 +18,17 @@ export const addMemory = async (req, res) => {
 export const getUserMemories = async (req,res)=>{
   const clerk_user_id = req.params.clerk_user_id;
   const year = req.params.year;
+  const limit = parseInt(req.query.limit) || 12;
+  const offset = parseInt(req.query.offset) || 0;
   
 
   try{
-    const memories = await MemoryModel.getyearMemoriesByUserId(clerk_user_id, year);
+    const memories = await MemoryModel.getyearMemoriesByUserId(clerk_user_id, year, limit, offset);
     if(memories.length === 0){
-      return res.status(404).json({ message: "No memories found for this user and year." });
+      return res.status(200).json({ memories: [], hasMore: false });
     }
-    res.status(200).json(memories);
+    const hasMore = memories.length === limit;
+    res.status(200).json({ memories, hasMore });
   } catch (err){
     res.status(500).json({ error: err.message });
   }

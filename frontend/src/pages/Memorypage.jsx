@@ -8,8 +8,13 @@ import { fetchMemoryDetails } from '../services/api/memoryApi'
 import { fetchMoments } from '../services/api/momentApi'
 import LoginRequest from '../components/LoginRequest'
 import { useAuth } from '@clerk/react'
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver'
+
 const Memorypage = () => {
     const [moments, setMoments] = useState([])
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const [momentOffset, setMomentOffset] = useState(0)
+    const [hasMomentMore, setHasMomentMore] = useState(true)
 
   const { isLoaded, userId, getToken } = useAuth()
 
@@ -17,6 +22,26 @@ const Memorypage = () => {
   const [isLoading, setIsLoading] = useState(true)
 
     const { memoryId } = useParams();
+
+  const loadMoreMoments = useCallback(async () => {
+    if (!hasMomentMore || isLoadingMore) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const data = await fetchMoments(userId, memoryId, getToken, 12, momentOffset + 12);
+      if (data?.moments) {
+        setMoments(prev => [...prev, ...data.moments]);
+        setMomentOffset(prev => prev + 12);
+        setHasMomentMore(data.hasMore);
+      }
+    } catch (error) {
+      console.error('Failed to fetch more moments:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [userId, memoryId, getToken, momentOffset, hasMomentMore, isLoadingMore]);
+
+  const observerRef = useIntersectionObserver(loadMoreMoments);
 
   const loadMemoryPageData = useCallback(async () => {
       if (!userId) {
@@ -27,13 +52,14 @@ const Memorypage = () => {
       }
 
       const [momentsData, detailsData] = await Promise.all([
-        fetchMoments(userId, memoryId, getToken),
+        fetchMoments(userId, memoryId, getToken, 12, 0),
         fetchMemoryDetails(memoryId, getToken)
       ])
 
       return {
-        momentsData: momentsData || [],
+        momentsData: momentsData?.moments || [],
         detailsData,
+        hasMore: momentsData?.hasMore ?? true,
       }
     }, [memoryId, userId, getToken])
 
@@ -45,9 +71,11 @@ const Memorypage = () => {
 
         setIsLoading(true)
         try {
-          const { momentsData, detailsData } = await loadMemoryPageData()
+          const { momentsData, detailsData, hasMore } = await loadMemoryPageData()
           setMoments(momentsData)
           setMemoryDetails(detailsData)
+          setMomentOffset(0)
+          setHasMomentMore(hasMore)
         } catch (err) {
           console.error('Error loading memory page data:', err)
         } finally {
@@ -65,8 +93,10 @@ const Memorypage = () => {
 
       setIsLoading(true)
       try {
-        const data = await fetchMoments(userId, memoryId, getToken)
-        setMoments(data || [])
+        const data = await fetchMoments(userId, memoryId, getToken, 12, 0)
+        setMoments(data?.moments || [])
+        setMomentOffset(0)
+        setHasMomentMore(data?.hasMore ?? true)
       } catch (err) {
         console.error('Error fetching moments:', err)
       } finally {
@@ -132,6 +162,19 @@ const Memorypage = () => {
                 <Momentcard key={moment.moment_id} title={moment.title} date={moment.date} img_url={moment.img_url} description={moment.description} cardIndex={moment.moment_id} onDeleteSuccess={refreshMoments} />
               ))}
           </div> 
+
+          {/* Intersection observer trigger for infinite scroll */}
+          {hasMomentMore && !isLoading && moments.length > 0 && (
+            <div ref={observerRef} className='mt-8 flex justify-center'>
+              {isLoadingMore && (
+                <div className='flex gap-2'>
+                  <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce'></div>
+                  <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce' style={{animationDelay: '0.1s'}}></div>
+                  <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce' style={{animationDelay: '0.2s'}}></div>
+                </div>
+              )}
+            </div>
+          )} 
 
           {showAddForm && (
             <Motion.div

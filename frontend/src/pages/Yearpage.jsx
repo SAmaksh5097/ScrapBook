@@ -6,20 +6,44 @@ import { motion as Motion } from 'motion/react'
 import { fetchMemories } from '../services/api/memoryApi'
 import LoginRequest from '../components/LoginRequest'
 import { useAuth } from '@clerk/react'
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver'
+
 const Yearpage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [memories, setMemories] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
   const { year } = useParams()
   const isValidYear = /^\d{4}$/.test(year);
   if (!isValidYear) {
     return <Navigate to="/404" />
   }
   const { userId, getToken } = useAuth()
-  // const userId = 1234; // in future, get this from auth context
+
+  const loadMoreMemories = useCallback(async () => {
+    if (!hasMore || isLoadingMore) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const data = await fetchMemories(userId, year, getToken, 12, offset + 12);
+      if (data?.memories) {
+        setMemories(prev => [...prev, ...data.memories]);
+        setOffset(prev => prev + 12);
+        setHasMore(data.hasMore);
+      }
+    } catch (error) {
+      console.error('Failed to fetch more memories:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [userId, year, getToken, offset, hasMore, isLoadingMore]);
+
+  const observerRef = useIntersectionObserver(loadMoreMemories);
 
   const fetchMemoriesData = useCallback(async () => {
-    return fetchMemories(userId, year, getToken)
+    return fetchMemories(userId, year, getToken, 12, 0)
   }, [userId, year, getToken])
 
   useEffect(() => {
@@ -27,10 +51,12 @@ const Yearpage = () => {
 
       const loadMemories = async () => {
         setIsLoading(true)
+        setOffset(0)
         try {
           const data = await fetchMemoriesData()
           if (isActive) {
-            setMemories(data || [])
+            setMemories(data?.memories || [])
+            setHasMore(data?.hasMore ?? true)
           }
         } catch (error) {
           console.error('Failed to fetch memories:', error)
@@ -50,9 +76,11 @@ const Yearpage = () => {
 
   const handleAddMemory = async () => {
       setIsLoading(true)
+      setOffset(0)
       try {
         const data = await fetchMemoriesData()
-        setMemories(data || [])
+        setMemories(data?.memories || [])
+        setHasMore(data?.hasMore ?? true)
       } catch (error) {
         console.error('Failed to fetch memories:', error)
       } finally {
@@ -64,8 +92,10 @@ const Yearpage = () => {
   const handleDeleteMemory = async (memoryId) => {
     // Confirmation already done in MemoryCard, just refetch the list
     try {
+      setOffset(0)
       const data = await fetchMemoriesData()
-      setMemories(data || [])
+      setMemories(data?.memories || [])
+      setHasMore(data?.hasMore ?? true)
     } catch (error) {
       console.error('Failed to refetch memories after deletion:', error)
     }
@@ -139,6 +169,19 @@ const Yearpage = () => {
               />
             ))}
         </div>
+
+        {/* Intersection observer trigger for infinite scroll */}
+        {hasMore && !isLoading && memories.length > 0 && (
+          <div ref={observerRef} className='mt-8 flex justify-center'>
+            {isLoadingMore && (
+              <div className='flex gap-2'>
+                <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce'></div>
+                <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce' style={{animationDelay: '0.1s'}}></div>
+                <div className='h-3 w-3 rounded-full bg-white/30 animate-bounce' style={{animationDelay: '0.2s'}}></div>
+              </div>
+            )}
+          </div>
+        )}
       </Motion.div>
       ):(
         <LoginRequest/>

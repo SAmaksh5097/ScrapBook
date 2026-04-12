@@ -26,10 +26,14 @@ export const fetchYears = async (clerk_user_id, getToken) => {
 }
 
 // used to fetch memories of a user for a specific year, used in Yearpage.jsx
-export const fetchMemories = async (clerk_user_id, year, getToken) => {
+export const fetchMemories = async (clerk_user_id, year, getToken, limit = 12, offset = 0) => {
     try {
         const token = await getToken();
-        const response = await fetch(`${VITE_API_BASE_URL}/memories/${clerk_user_id}/${year}`, {
+        const url = new URL(`${VITE_API_BASE_URL}/memories/${clerk_user_id}/${year}`);
+        url.searchParams.append('limit', limit);
+        url.searchParams.append('offset', offset);
+        
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -45,6 +49,7 @@ export const fetchMemories = async (clerk_user_id, year, getToken) => {
       return data;
     } catch (error) {
       console.error('Failed to fetch memories:', error)
+      return { memories: [], hasMore: false };
     }
 }
 

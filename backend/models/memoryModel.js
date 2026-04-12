@@ -36,13 +36,13 @@ class MemoryModel{
     }
   }
 
-  static async getyearMemoriesByUserId(clerk_user_id, year){
+  static async getyearMemoriesByUserId(clerk_user_id, year, limit = 12, offset = 0){
     const sql = `
-      SELECT * FROM memory_data WHERE clerk_user_id=$1 and EXTRACT(YEAR FROM date) = $2 ORDER BY date;
+      SELECT * FROM memory_data WHERE clerk_user_id=$1 and EXTRACT(YEAR FROM date) = $2 ORDER BY date DESC LIMIT $3 OFFSET $4;
     `;
     
     try{
-      const result = await query(sql, [clerk_user_id, year]);
+      const result = await query(sql, [clerk_user_id, year, limit, offset]);
       return result.rows;
     } catch (err){
       throw new Error('Error fetching memories: ' + err.message);

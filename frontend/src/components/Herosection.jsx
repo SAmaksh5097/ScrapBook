@@ -27,7 +27,7 @@ const Herosection = () => {
             transition={{ duration: 0.25, delay: 0.1, ease: 'easeOut' }}
             className='mt-8 w-full max-w-2xl border-l-2 border-white/70 pl-4 md:mt-10 md:pl-6'
           >
-            <p className='text-lg leading-relaxed md:text-2xl'>Easy to build, effortless to share, and made to relive every special moment with your loved ones.</p>
+            <p className='text-lg leading-relaxed md:text-2xl'>Organizing your memories made simple.</p>
             <div>
               <Link to={'/dashboard'}>
               <motion.button

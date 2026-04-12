@@ -11,7 +11,7 @@ const Footer = () => {
     >
       <div className='border-t border-white/35 bg-[#131313] backdrop-blur px-4 py-2 text-center text-xs text-white/70 md:px-10 md:py-3 md:text-sm space-y-0.5'>
         <p>© {new Date().getFullYear()} ScrapBook.</p>
-        <p>WebApp made with ❤️ by <a href="https://samaksh-arzare.vercel.app" target="_blank" rel="noopener noreferrer" className='hover:underline'>SAmaksh</a></p>
+        <p>WebApp made with ❤️ by <a href="https://samaksh-arzare.vercel.app" target="_blank" rel="noopener noreferrer" className='hover:underline text-white'>SAmaksh</a></p>
       </div>
     </motion.footer>
   )

@@ -11,7 +11,7 @@ const Herosection = () => {
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className='text-[2.8rem] leading-[0.95] font-black tracking-tight md:text-[6rem] lg:text-[8rem]'
           >
-            YOUR YEAR,
+            YOUR MEMORIES,
           </motion.h1>
           <motion.h1
             initial={{ opacity: 0, y: 12 }}

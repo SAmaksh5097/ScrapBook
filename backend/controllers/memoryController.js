@@ -104,17 +104,26 @@ export const getDistinctYears = async (req,res)=>{
 
 export const deleteMemory = async (req, res) => {
   const memoryId = parseInt(req.params.memoryId, 10);
+  const {userId} = req.auth;
 
   if (Number.isNaN(memoryId)) {
     return res.status(400).json({ error: 'Invalid memory id.' });
   }
 
   try {
+    const memory = await MemoryModel.getMemoryById(memoryId);
+    if(!memory) {
+      return res.status(404).json({ error: 'Memory not found.' });
+    }
+    if (memory.clerk_user_id !== userId) {
+      return res.status(403).json({ error: 'Unauthorized to delete this memory.' });
+    }
     const deletedMemory = await MemoryModel.deleteMemoryWithMoments(memoryId);
 
     if (!deletedMemory) {
       return res.status(404).json({ message: 'Memory not found.' });
     }
+    
 
     return res.status(200).json({
       message: 'Memory and related moments deleted successfully!',

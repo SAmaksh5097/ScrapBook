@@ -23,6 +23,6 @@ router.get('/:clerk_user_id/:year', verifyUserOwnership, getUserMemories);
 router.get('/:memoryId', getMemoryById);
 
 // DELETE - Delete memory (requires auth)
-router.delete('/:memoryId', deleteMemory);
+router.delete('/:memoryId',deleteMemory);
 
 export default router;

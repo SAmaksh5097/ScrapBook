@@ -4,7 +4,9 @@ export const fetchYears = async (clerk_user_id, getToken) => {
     try{
       
       const token = await getToken();
-      const response = await fetch(`${VITE_API_BASE_URL}/memories/years/${clerk_user_id}`,{
+      const url = `${VITE_API_BASE_URL}/memories/years/${clerk_user_id}`;
+      
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -13,7 +15,19 @@ export const fetchYears = async (clerk_user_id, getToken) => {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch years')
+        const contentType = response.headers.get('content-type');
+        let errorDetails = '';
+        
+        // Try to parse error response
+        if (contentType?.includes('application/json')) {
+          const errorData = await response.json();
+          errorDetails = JSON.stringify(errorData);
+        } else {
+          errorDetails = await response.text();
+        }
+        
+        console.error(`API Error [${response.status}]:`, errorDetails);
+        throw new Error(`Failed to fetch years: ${response.status} - ${errorDetails}`);
       }
 
       const data = await response.json();

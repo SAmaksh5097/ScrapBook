@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/react": "^6.2.1",
     "@tailwindcss/vite": "^4.2.2",
+    "@vercel/analytics": "^2.0.1",
     "cors": "^2.8.5",
     "lucide-react": "^1.7.0",
     "motion": "^12.38.0",

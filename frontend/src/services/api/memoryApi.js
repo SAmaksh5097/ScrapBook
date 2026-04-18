@@ -3,8 +3,11 @@ const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const fetchYears = async (clerk_user_id, getToken) => {
     try{
       
+      
       const token = await getToken();
-      const url = `${VITE_API_BASE_URL}/memories/years/${clerk_user_id}`;
+      const url = `${VITE_API_BASE_URL}/api/memories/years/${clerk_user_id}`;
+      console.log(url);
+      
       
       const response = await fetch(url, {
         method: 'GET',
@@ -43,7 +46,7 @@ export const fetchYears = async (clerk_user_id, getToken) => {
 export const fetchMemories = async (clerk_user_id, year, getToken, limit = 12, offset = 0) => {
     try {
         const token = await getToken();
-        const url = new URL(`${VITE_API_BASE_URL}/memories/${clerk_user_id}/${year}`);
+        const url = new URL(`${VITE_API_BASE_URL}/api/memories/${clerk_user_id}/${year}`);
         url.searchParams.append('limit', limit);
         url.searchParams.append('offset', offset);
         
@@ -71,7 +74,7 @@ export const fetchMemories = async (clerk_user_id, year, getToken, limit = 12, o
 export const fetchMemoriesWithMoments = async (clerk_user_id, year, getToken) => {
     try {
         const token = await getToken();
-        const response = await fetch(`${VITE_API_BASE_URL}/memories/with-moments/${clerk_user_id}/${year}`, {
+        const response = await fetch(`${VITE_API_BASE_URL}/api/memories/with-moments/${clerk_user_id}/${year}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -95,7 +98,7 @@ export const fetchMemoriesWithMoments = async (clerk_user_id, year, getToken) =>
 export const fetchMemoryDetails = async (memoryId, getToken) => {
     try{
       const token = await getToken();
-        const response = await fetch(`${VITE_API_BASE_URL}/memories/${memoryId}`, {
+        const response = await fetch(`${VITE_API_BASE_URL}/api/memories/${memoryId}`, {
               method: 'GET',
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -112,7 +115,7 @@ export const fetchMemoryDetails = async (memoryId, getToken) => {
 // used to add a new memory, used in AddMemoryForm.jsx
 export const addMemory = async (token, clerk_user_id, title, date, cover_img_url, location, description)=>{
     try{
-      const response = await fetch(`${VITE_API_BASE_URL}/memories`, {
+      const response = await fetch(`${VITE_API_BASE_URL}/api/memories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +142,7 @@ export const addMemory = async (token, clerk_user_id, title, date, cover_img_url
 // used to delete a memory and its related moments, used in Yearpage.jsx
 export const deleteMemory = async (memoryId, token) => {
   try {
-    const response = await fetch(`${VITE_API_BASE_URL}/memories/${memoryId}`, {
+    const response = await fetch(`${VITE_API_BASE_URL}/api/memories/${memoryId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

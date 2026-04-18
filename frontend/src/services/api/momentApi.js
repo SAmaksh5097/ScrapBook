@@ -3,7 +3,7 @@ const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const fetchMoments = async (clerk_user_id, memoryId, getToken, limit = 12, offset = 0)=>{
     try {
       const token = await getToken();
-      const url = new URL(`${VITE_API_BASE_URL}/moments/${clerk_user_id}/${memoryId}`);
+      const url = new URL(`${VITE_API_BASE_URL}/api/moments/${clerk_user_id}/${memoryId}`);
       url.searchParams.append('limit', limit);
       url.searchParams.append('offset', offset);
       
@@ -26,7 +26,7 @@ export const fetchMoments = async (clerk_user_id, memoryId, getToken, limit = 12
 // used to delete a moment, used in MomentCard.jsx
 export const deleteMoment = async(momentId, memoryId, token)=>{
     try{
-      const response = await fetch(`${VITE_API_BASE_URL}/moments`,{
+      const response = await fetch(`${VITE_API_BASE_URL}/api/moments`,{
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ export const deleteMoment = async(momentId, memoryId, token)=>{
 
 export const addMoment = async (token, clerk_user_id, memoryId, title, day, img_url, description) =>{
   try{
-    const response = await fetch(`${VITE_API_BASE_URL}/moments`,{
+    const response = await fetch(`${VITE_API_BASE_URL}/api/moments`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

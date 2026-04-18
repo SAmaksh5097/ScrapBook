@@ -18,9 +18,10 @@ app.use(
 
 app.use((req,res,next)=>{
 	if (req.path.startsWith('/api/')) {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Cache-Control', 'no-store, no-cache, no-transform, must-revalidate, proxy-revalidate, max-age=0');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
+    res.set('ETag', ''); // Disable ETag to prevent 304
   }
   next();
 })

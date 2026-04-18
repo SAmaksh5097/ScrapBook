@@ -7,22 +7,11 @@ import dotenv from 'dotenv';
 import {clerkMiddleware, getAuth} from '@clerk/express'
 dotenv.config();
 
-const allowedOrigins = [
-	process.env.FRONTEND_URL,
-	'http://localhost:5173',
-	'http://127.0.0.1:5173',
-].filter(Boolean);
+const allowedOrigin = process.env.FRONTEND_URL;
 
 app.use(
 	cors({
-		origin(origin, callback) {
-			// Allow server-to-server requests (no origin) and configured frontend origins.
-			if (!origin || allowedOrigins.includes(origin)) {
-				return callback(null, true);
-			}
-
-			return callback(new Error('CORS: origin not allowed'));
-		},
+		origin: allowedOrigin,
 		credentials: true,
 	})
 );

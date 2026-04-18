@@ -6,7 +6,6 @@ export const fetchYears = async (clerk_user_id, getToken) => {
       
       const token = await getToken();
       const url = `${VITE_API_BASE_URL}/api/memories/years/${clerk_user_id}`;
-      console.log(url);
       
       
       const response = await fetch(url, {

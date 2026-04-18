@@ -8,11 +8,14 @@ import Memorypage from './pages/Memorypage'
 import Yearbook from './pages/Yearbook'
 import { AnimatePresence, motion } from 'motion/react'
 import Error from './pages/Error'
+import { Analytics } from "@vercel/analytics/react"
 const App = () => {
+
   const location = useLocation()
 
   return (
     <div className='flex flex-col min-h-screen w-full bg-black text-white'>
+      <Analytics/>
       <Header/>
       <main className='flex-1'>
         <AnimatePresence mode='wait'>
